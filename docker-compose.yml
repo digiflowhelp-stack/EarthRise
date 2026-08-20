@@ -1,0 +1,21 @@
+# Local dev stack: FastAPI backend + Redis.
+# Usage:
+#   cp services/api/.env.example services/api/.env   # then add your FIRMS key
+#   docker compose up --build
+services:
+  api:
+    build: ./services/api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./services/api/.env
+    environment:
+      # Point the app at the compose Redis (overrides .env if empty there).
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
