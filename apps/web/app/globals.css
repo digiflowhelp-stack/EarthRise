@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
+/* ===== Algeria Fire Map — design system ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces (dark, premium) */
+  --bg: #07080c;
+  --surface: rgba(18, 20, 28, 0.72);
+  --surface-solid: #12141c;
+  --surface-hover: rgba(38, 41, 54, 0.8);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Ink */
+  --text: #f5f6f8;
+  --text-secondary: #a4a7b2;
+  --text-muted: #6c6f7d;
+
+  /* Fire intensity ramp (sequential, low → extreme) */
+  --fire-1: #ffe066; /* low */
+  --fire-2: #ffa630; /* moderate */
+  --fire-3: #fb5607; /* high */
+  --fire-4: #e01e37; /* very high */
+  --fire-5: #a4133c; /* extreme */
+  --accent: #ff7a1a;
+  --accent-grad: linear-gradient(135deg, #ffb020 0%, #ff5a36 55%, #e01e37 100%);
+
+  /* Status */
+  --live: #34d399;
+
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --radius: 18px;
+  --radius-sm: 12px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+    var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
 }
+
+/* ===== Glass panel ===== */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ===== Motion ===== */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+@keyframes ringPulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.animate-in { animation: fadeSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.panel-in { animation: slideInRight 0.34s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ===== Selected-fire pulsing marker ===== */
+.fire-marker {
+  width: 18px;
+  height: 18px;
+  position: relative;
+}
+.fire-marker::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 12px rgba(255, 122, 26, 0.9);
+}
+.fire-marker::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 160, 60, 0.9);
+  animation: ringPulse 1.6s ease-out infinite;
+}
+
+/* MapLibre attribution tidy (we use our own detail panel) */
+.maplibregl-ctrl-attrib {
+  background: rgba(0, 0, 0, 0.4) !important;
+  color: var(--text-muted) !important;
+}
+.maplibregl-ctrl-attrib a { color: var(--text-secondary) !important; }
+.maplibregl-ctrl-group {
+  background: var(--surface-solid) !important;
+  border: 1px solid var(--border) !important;
+}
+.maplibregl-ctrl-group button + button { border-top: 1px solid var(--border) !important; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.14); border-radius: 8px; }
