@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     # --- CORS: comma-separated list of allowed frontend origins ---
     cors_origins: str = "http://localhost:3000"
+    # Optional regex to allow dynamic origins (e.g. Vercel preview deploys).
+    cors_origin_regex: str = ""
 
     # --- Redis (optional). If unset, an in-memory cache is used (fine for local dev). ---
     redis_url: str = ""
