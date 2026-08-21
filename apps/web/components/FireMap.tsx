@@ -44,9 +44,12 @@ interface Props {
   selected: SelectedFire | null;
   onSelect: (fire: SelectedFire | null) => void;
   styleKey: MapStyleKey;
+  isMobile: boolean;
 }
 
-export default function FireMap({ data, selected, onSelect, styleKey }: Props) {
+export default function FireMap({ data, selected, onSelect, styleKey, isMobile }: Props) {
+  const isMobileRef = useRef(isMobile);
+  isMobileRef.current = isMobile;
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const readyRef = useRef(false);
@@ -151,6 +154,7 @@ export default function FireMap({ data, selected, onSelect, styleKey }: Props) {
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
+    const mobile = isMobileRef.current;
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: styleFor(styleKeyRef.current),
@@ -158,10 +162,15 @@ export default function FireMap({ data, selected, onSelect, styleKey }: Props) {
       zoom: INITIAL_ZOOM,
       minZoom: 4,
       maxZoom: 14,
-      attributionControl: { compact: true },
+      // On mobile, keep attribution clear of the top pill / bottom dock.
+      attributionControl: false,
     });
     mapRef.current = map;
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    // On mobile every corner is used by the UI, so credit is shown in the dock instead.
+    if (!mobile) {
+      map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    }
     map.on("error", (e) => {
       const msg = e?.error?.message ?? "";
       if (/Failed to fetch|aborted|AbortError/i.test(msg)) return;
@@ -175,16 +184,30 @@ export default function FireMap({ data, selected, onSelect, styleKey }: Props) {
       readyRef.current = true;
     });
 
-    // Bind interaction handlers once (they target layer ids that persist across styles).
-    const pick = (e: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }) => {
-      const f = e.features?.[0];
-      if (!f) return;
-      const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates as [number, number];
-      onSelectRef.current({ id: f.id ?? `${lng},${lat}`, lng, lat, properties: f.properties as never });
-    };
-    map.on("click", CIRCLE_LAYER, pick);
+    // Single click handler with a tap tolerance so small fire dots are easy to hit
+    // (bigger padding on touch to respect finger size).
     map.on("click", (e) => {
-      if (map.queryRenderedFeatures(e.point, { layers: [CIRCLE_LAYER] }).length === 0) onSelectRef.current(null);
+      const pad = isMobileRef.current ? 14 : 6;
+      const box: [maplibregl.PointLike, maplibregl.PointLike] = [
+        [e.point.x - pad, e.point.y - pad],
+        [e.point.x + pad, e.point.y + pad],
+      ];
+      const hits = map.queryRenderedFeatures(box, { layers: [CIRCLE_LAYER] });
+      if (hits.length === 0) {
+        onSelectRef.current(null);
+        return;
+      }
+      // Pick the hit nearest the tap point.
+      let best = hits[0];
+      let bestD = Infinity;
+      for (const f of hits) {
+        const c = (f.geometry as GeoJSON.Point).coordinates as [number, number];
+        const pt = map.project(c as [number, number]);
+        const d = (pt.x - e.point.x) ** 2 + (pt.y - e.point.y) ** 2;
+        if (d < bestD) { bestD = d; best = f; }
+      }
+      const [lng, lat] = (best.geometry as GeoJSON.Point).coordinates as [number, number];
+      onSelectRef.current({ id: best.id ?? `${lng},${lat}`, lng, lat, properties: best.properties as never });
     });
     map.on("mouseenter", CIRCLE_LAYER, () => (map.getCanvas().style.cursor = "pointer"));
     map.on("mouseleave", CIRCLE_LAYER, () => (map.getCanvas().style.cursor = ""));
