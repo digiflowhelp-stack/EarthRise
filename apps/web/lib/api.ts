@@ -79,6 +79,11 @@ export async function fetchPlace(url: string): Promise<PlaceInfo> {
   return res.json();
 }
 
+export interface RiskDay {
+  fwi: number;
+  class: string;
+}
+
 export interface RiskWilaya {
   code: number;
   name: string;
@@ -89,6 +94,7 @@ export interface RiskWilaya {
   temp: number;
   rh: number;
   wind: number;
+  forecast?: RiskDay[]; // [today, +1d, +2d]
 }
 
 export interface RiskData {

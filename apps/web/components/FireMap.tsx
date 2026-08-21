@@ -86,7 +86,7 @@ function riskGeoJSON(risk: RiskData | undefined): GeoJSON.FeatureCollection {
     features: risk.wilayas.map((w) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: [w.lng, w.lat] },
-      properties: { name: w.name, fwi: w.fwi, class: w.class, temp: w.temp, rh: w.rh, wind: w.wind },
+      properties: { name: w.name, fwi: w.fwi, class: w.class, temp: w.temp, rh: w.rh, wind: w.wind, forecast: JSON.stringify(w.forecast ?? []) },
     })),
   };
 }
@@ -287,10 +287,28 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
     map.on("click", RISK_LAYER, (e) => {
       const f = e.features?.[0];
       if (!f) return;
-      const p = f.properties as { name: string; fwi: number; class: string; temp: number; rh: number; wind: number };
+      const p = f.properties as { name: string; fwi: number; class: string; temp: number; rh: number; wind: number; forecast?: string };
       const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates as [number, number];
+      let forecast: { fwi: number; class: string }[] = [];
+      try {
+        forecast = p.forecast ? JSON.parse(p.forecast) : [];
+      } catch {
+        forecast = [];
+      }
+      const labels = ["Today", "Tomorrow", "In 2 days"];
+      const outlook = forecast.length
+        ? `<div style="margin-top:9px;padding-top:8px;border-top:1px solid #eee">
+             <div style="color:#777;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">3-day outlook</div>
+             ${forecast
+               .map(
+                 (d, i) =>
+                   `<div style="display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:12px"><span style="color:#666">${labels[i] ?? ""}</span><span style="font-weight:600;color:${riskColor(d.class)}">${riskLabel(d.class)} · ${d.fwi}</span></div>`
+               )
+               .join("")}
+           </div>`
+        : "";
       const html = `
-        <div style="font:13px system-ui,sans-serif;min-width:172px;color:#111">
+        <div style="font:13px system-ui,sans-serif;min-width:186px;color:#111">
           <div style="font-weight:700;font-size:14px">${p.name}</div>
           <div style="color:#777;font-size:11px;margin-bottom:8px">Fire-weather risk (FWI)</div>
           <div style="display:flex;align-items:baseline;gap:7px">
@@ -298,6 +316,7 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
             <span style="font-weight:700;color:${riskColor(p.class)}">${riskLabel(p.class)}</span>
           </div>
           <div style="color:#666;font-size:12px;margin-top:7px">${p.temp}°C · ${p.rh}% RH · ${p.wind} km/h wind</div>
+          ${outlook}
         </div>`;
       new maplibregl.Popup({ closeButton: true, maxWidth: "240px" }).setLngLat([lng, lat]).setHTML(html).addTo(map);
     });
