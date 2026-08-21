@@ -1,15 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
 import { fetchFires, firesKey, type FireCollection, type SelectedFire } from "@/lib/api";
 import { durationFor, passesFilter, withinAge, type DurationKey } from "@/lib/fire";
+import { rankWilayas, type WilayaCount } from "@/lib/wilayaAssign";
 import type { MapStyleKey } from "@/lib/mapStyles";
 import { useIsMobile } from "@/lib/useIsMobile";
 import TopBar from "./TopBar";
 import Legend from "./Legend";
 import FireDetailPanel from "./FireDetailPanel";
+import WilayaRanking from "./WilayaRanking";
+import TimelineScrubber from "./TimelineScrubber";
 
 const FireMap = dynamic(() => import("./FireMap"), {
   ssr: false,
@@ -20,31 +23,128 @@ const FireMap = dynamic(() => import("./FireMap"), {
   ),
 });
 
+const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
+const HISTORY_WINDOW = 12 * 3600 * 1000; // rolling window shown at the cursor
+const PLAYBACK_STEPS = 150;
+const PLAYBACK_TICK = 80;
+
+type Focus = { lng: number; lat: number; zoom: number; nonce: number } | null;
+
 export default function FireDashboard() {
   const isMobile = useIsMobile();
   const [duration, setDuration] = useState<DurationKey>("24h");
   const [styleKey, setStyleKey] = useState<MapStyleKey>("dark");
   const [selected, setSelected] = useState<SelectedFire | null>(null);
+  const [focus, setFocus] = useState<Focus>(null);
+  const focusNonce = useRef(0);
+
+  const [rankingOpen, setRankingOpen] = useState(false);
+  const [historyMode, setHistoryMode] = useState(false);
+  const [historyAnchor, setHistoryAnchor] = useState<number | null>(null);
+  const [cursor, setCursor] = useState(0);
+  const [playing, setPlaying] = useState(false);
 
   const dur = durationFor(duration);
 
-  const { data, error, isLoading } = useSWR<FireCollection>(firesKey(dur.apiDays), fetchFires, {
+  const { data: liveData, error, isLoading } = useSWR<FireCollection>(firesKey(dur.apiDays), fetchFires, {
     refreshInterval: 5 * 60 * 1000,
     revalidateOnFocus: false,
     keepPreviousData: true,
   });
+  const { data: historyData } = useSWR<FireCollection>(historyMode ? firesKey(7) : null, fetchFires, {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
 
-  const filtered = useMemo<FireCollection | undefined>(() => {
-    if (!data) return data;
-    const features = data.features.filter(
+  const minTime = historyAnchor != null ? historyAnchor - SEVEN_DAYS : 0;
+  const maxTime = historyAnchor ?? 0;
+
+  // 7-day confirmed fires (for the timeline histogram).
+  const historyConfirmed = useMemo(
+    () => (historyData ? historyData.features.filter((f) => passesFilter(f.properties, "confirmed")) : []),
+    [historyData]
+  );
+
+  // Currently displayed fires: history window or live recency.
+  const displayed = useMemo<FireCollection | undefined>(() => {
+    if (historyMode) {
+      if (!historyData) return undefined;
+      const winStart = cursor - HISTORY_WINDOW;
+      const features = historyConfirmed.filter((f) => {
+        const iso = f.properties.acq_datetime;
+        if (!iso) return false;
+        const t = new Date(iso).getTime();
+        return t <= cursor && t >= winStart;
+      });
+      return { ...historyData, features, properties: { ...historyData.properties, count: features.length } };
+    }
+    if (!liveData) return liveData;
+    const features = liveData.features.filter(
       (f) => passesFilter(f.properties, "confirmed") && withinAge(f.properties.acq_datetime, dur.maxAgeHours)
     );
-    return { ...data, features, properties: { ...data.properties, count: features.length } };
-  }, [data, dur.maxAgeHours]);
+    return { ...liveData, features, properties: { ...liveData.properties, count: features.length } };
+  }, [historyMode, historyData, historyConfirmed, cursor, liveData, dur.maxAgeHours]);
+
+  const ranking = useMemo(() => rankWilayas(displayed?.features ?? []), [displayed]);
+
+  // Playback loop.
+  useEffect(() => {
+    if (!playing || !historyMode || historyAnchor == null) return;
+    const min = historyAnchor - SEVEN_DAYS;
+    const max = historyAnchor;
+    const step = (max - min) / PLAYBACK_STEPS;
+    const id = setInterval(() => {
+      setCursor((c) => {
+        const n = c + step;
+        if (n >= max) {
+          setPlaying(false);
+          return max;
+        }
+        return n;
+      });
+    }, PLAYBACK_TICK);
+    return () => clearInterval(id);
+  }, [playing, historyMode, historyAnchor]);
+
+  const flyTo = (lng: number, lat: number, zoom: number) => {
+    focusNonce.current += 1;
+    setFocus({ lng, lat, zoom, nonce: focusNonce.current });
+  };
+
+  const selectWilaya = (w: WilayaCount) => {
+    flyTo(w.lng, w.lat, 8.2);
+    setRankingOpen(false);
+  };
+
+  const enterHistory = () => {
+    const now = Date.now();
+    setHistoryAnchor(now);
+    setCursor(now);
+    setHistoryMode(true);
+    setPlaying(false);
+    setRankingOpen(false);
+    setSelected(null);
+  };
+
+  const exitHistory = () => {
+    setHistoryMode(false);
+    setPlaying(false);
+    setHistoryAnchor(null);
+  };
+
+  const togglePlay = () => {
+    if (playing) {
+      setPlaying(false);
+    } else {
+      if (cursor >= maxTime - 1000) setCursor(minTime);
+      setPlaying(true);
+    }
+  };
 
   return (
     <main style={{ position: "fixed", inset: 0, background: "var(--bg)" }}>
-      <FireMap data={filtered} selected={selected} onSelect={setSelected} styleKey={styleKey} isMobile={isMobile} />
+      <FireMap data={displayed} selected={selected} onSelect={setSelected} styleKey={styleKey} isMobile={isMobile} focus={focus} />
+
       <TopBar
         isMobile={isMobile}
         styleKey={styleKey}
@@ -54,13 +154,39 @@ export default function FireDashboard() {
           setDuration(d);
           setSelected(null);
         }}
-        shownCount={filtered?.features.length ?? 0}
-        totalCount={data?.properties.count ?? 0}
-        generatedAt={data?.properties.generated_at}
+        shownCount={displayed?.features.length ?? 0}
+        totalCount={liveData?.properties.count ?? 0}
+        generatedAt={liveData?.properties.generated_at}
         loading={isLoading}
         error={error ? String(error.message ?? error) : undefined}
+        historyMode={historyMode}
+        onEnterHistory={enterHistory}
+        onToggleRanking={() => setRankingOpen((v) => !v)}
       />
+
       {!isMobile && <Legend />}
+
+      {!isMobile && !selected && !historyMode && <WilayaRanking items={ranking} onSelect={selectWilaya} isMobile={false} />}
+      {isMobile && rankingOpen && <WilayaRanking items={ranking} onSelect={selectWilaya} isMobile onClose={() => setRankingOpen(false)} />}
+
+      {historyMode && historyData && (
+        <TimelineScrubber
+          features={historyConfirmed}
+          minTime={minTime}
+          maxTime={maxTime}
+          cursor={cursor}
+          shownCount={displayed?.features.length ?? 0}
+          playing={playing}
+          onCursor={(t) => {
+            setPlaying(false);
+            setCursor(t);
+          }}
+          onPlayToggle={togglePlay}
+          onExit={exitHistory}
+          isMobile={isMobile}
+        />
+      )}
+
       {selected && <FireDetailPanel fire={selected} onClose={() => setSelected(null)} isMobile={isMobile} />}
     </main>
   );
