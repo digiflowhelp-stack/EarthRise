@@ -117,7 +117,8 @@ async def _fetch_source(client: httpx.AsyncClient, map_key: str, source: str, da
 
 async def fetch_fires_geojson(map_key: str, days: int = 1) -> dict:
     """Fetch all sources in parallel and merge into one FeatureCollection."""
-    days = max(1, min(days, 7))
+    # FIRMS Area API caps DAY_RANGE at 5; higher values return no data.
+    days = max(1, min(days, 5))
     async with httpx.AsyncClient() as client:
         results: list[list[dict]] = []
         # Fetch sources concurrently.

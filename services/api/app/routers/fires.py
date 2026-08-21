@@ -24,7 +24,7 @@ def _etag(payload: str) -> str:
 
 @router.get("/fires")
 async def get_fires(
-    days: int = Query(1, ge=1, le=7, description="Look-back window in days (1-7)."),
+    days: int = Query(1, ge=1, le=5, description="Look-back window in days (1-5; FIRMS caps at 5)."),
     if_none_match: str | None = Header(default=None),
 ) -> Response:
     settings = get_settings()
