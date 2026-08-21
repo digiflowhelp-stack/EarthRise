@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { FireCollection, SelectedFire } from "@/lib/api";
+import type { FireCollection, RiskData, SelectedFire } from "@/lib/api";
+import { riskColor, riskLabel } from "@/lib/risk";
 import { styleFor, type MapStyleKey } from "@/lib/mapStyles";
 import wilayasData from "@/lib/wilayas.json";
 import algeriaBorder from "@/lib/algeria-border.json";
@@ -16,6 +17,8 @@ const HEAT_LAYER = "fires-heat";
 const CIRCLE_LAYER = "fires-circles";
 const WILAYA_SRC = "wilayas";
 const WILAYA_LAYER = "wilaya-labels";
+const RISK_SRC = "risk";
+const RISK_LAYER = "risk-circles";
 const MASK_SRC = "mask";
 const BORDER_SRC = "algeria-border";
 
@@ -46,11 +49,40 @@ interface Props {
   styleKey: MapStyleKey;
   isMobile: boolean;
   focus: { lng: number; lat: number; zoom: number; nonce: number } | null;
+  riskData: RiskData | undefined;
+  showRisk: boolean;
 }
 
-export default function FireMap({ data, selected, onSelect, styleKey, isMobile, focus }: Props) {
+const RISK_COLOR_EXPR: maplibregl.ExpressionSpecification = [
+  "match", ["get", "class"],
+  "very-low", "#16a34a",
+  "low", "#84cc16",
+  "moderate", "#eab308",
+  "high", "#f97316",
+  "very-high", "#ef4444",
+  "extreme", "#991b1b",
+  "#eab308",
+];
+
+function riskGeoJSON(risk: RiskData | undefined): GeoJSON.FeatureCollection {
+  if (!risk) return { type: "FeatureCollection", features: [] };
+  return {
+    type: "FeatureCollection",
+    features: risk.wilayas.map((w) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [w.lng, w.lat] },
+      properties: { name: w.name, fwi: w.fwi, class: w.class, temp: w.temp, rh: w.rh, wind: w.wind },
+    })),
+  };
+}
+
+export default function FireMap({ data, selected, onSelect, styleKey, isMobile, focus, riskData, showRisk }: Props) {
   const isMobileRef = useRef(isMobile);
   isMobileRef.current = isMobile;
+  const riskDataRef = useRef(riskData);
+  const showRiskRef = useRef(showRisk);
+  riskDataRef.current = riskData;
+  showRiskRef.current = showRisk;
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const readyRef = useRef(false);
@@ -107,6 +139,28 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
         "text-halo-color": "rgba(0,0,0,0.85)",
         "text-halo-width": 1.4,
         "text-opacity": 0.92,
+      },
+    });
+
+    // Fire-risk (FWI) circles per wilaya — under the fires, toggled via visibility.
+    if (!map.getSource(RISK_SRC)) map.addSource(RISK_SRC, { type: "geojson", data: riskGeoJSON(riskDataRef.current) });
+    map.addLayer({
+      id: RISK_LAYER,
+      type: "circle",
+      source: RISK_SRC,
+      layout: { visibility: showRiskRef.current ? "visible" : "none" },
+      paint: {
+        "circle-radius": [
+          "interpolate", ["linear"], ["zoom"],
+          5, ["interpolate", ["linear"], ["get", "fwi"], 0, 7, 60, 17],
+          9, ["interpolate", ["linear"], ["get", "fwi"], 0, 12, 60, 34],
+        ],
+        "circle-color": RISK_COLOR_EXPR,
+        "circle-opacity": 0.5,
+        "circle-blur": 0.3,
+        "circle-stroke-color": RISK_COLOR_EXPR,
+        "circle-stroke-width": 1,
+        "circle-stroke-opacity": 0.9,
       },
     });
 
@@ -213,6 +267,27 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
     map.on("mouseenter", CIRCLE_LAYER, () => (map.getCanvas().style.cursor = "pointer"));
     map.on("mouseleave", CIRCLE_LAYER, () => (map.getCanvas().style.cursor = ""));
 
+    // Risk circle → FWI popup.
+    map.on("click", RISK_LAYER, (e) => {
+      const f = e.features?.[0];
+      if (!f) return;
+      const p = f.properties as { name: string; fwi: number; class: string; temp: number; rh: number; wind: number };
+      const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates as [number, number];
+      const html = `
+        <div style="font:13px system-ui,sans-serif;min-width:172px;color:#111">
+          <div style="font-weight:700;font-size:14px">${p.name}</div>
+          <div style="color:#777;font-size:11px;margin-bottom:8px">Fire-weather risk (FWI)</div>
+          <div style="display:flex;align-items:baseline;gap:7px">
+            <span style="font-size:26px;font-weight:800">${p.fwi}</span>
+            <span style="font-weight:700;color:${riskColor(p.class)}">${riskLabel(p.class)}</span>
+          </div>
+          <div style="color:#666;font-size:12px;margin-top:7px">${p.temp}°C · ${p.rh}% RH · ${p.wind} km/h wind</div>
+        </div>`;
+      new maplibregl.Popup({ closeButton: true, maxWidth: "240px" }).setLngLat([lng, lat]).setHTML(html).addTo(map);
+    });
+    map.on("mouseenter", RISK_LAYER, () => (map.getCanvas().style.cursor = "pointer"));
+    map.on("mouseleave", RISK_LAYER, () => (map.getCanvas().style.cursor = ""));
+
     return () => {
       map.remove();
       mapRef.current = null;
@@ -242,6 +317,21 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
     const src = map.getSource(FIRES_SRC) as maplibregl.GeoJSONSource | undefined;
     if (src) src.setData(data as unknown as GeoJSON.FeatureCollection);
   }, [data]);
+
+  // Push risk data.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    const src = map.getSource(RISK_SRC) as maplibregl.GeoJSONSource | undefined;
+    if (src) src.setData(riskGeoJSON(riskData));
+  }, [riskData]);
+
+  // Toggle risk layer visibility.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !readyRef.current) return;
+    if (map.getLayer(RISK_LAYER)) map.setLayoutProperty(RISK_LAYER, "visibility", showRisk ? "visible" : "none");
+  }, [showRisk]);
 
   // Fly to a requested focus target (wilaya / search). `nonce` forces re-fire.
   useEffect(() => {
