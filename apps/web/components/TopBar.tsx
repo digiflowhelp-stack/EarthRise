@@ -4,6 +4,7 @@ import { DURATIONS, type DurationKey } from "@/lib/fire";
 import { MAP_STYLES, type MapStyleKey } from "@/lib/mapStyles";
 import Segmented from "./Segmented";
 import StatBadge from "./StatBadge";
+import { FlameIcon } from "./Icons";
 
 interface Props {
   isMobile: boolean;
@@ -24,11 +25,13 @@ const durationOpts = DURATIONS.map((d) => ({ key: d.key, label: d.label }));
 function Brand({ small }: { small?: boolean }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{ width: small ? 34 : 40, height: small ? 34 : 40, borderRadius: small ? 10 : 12, background: "var(--accent-grad)", display: "grid", placeItems: "center", fontSize: small ? 17 : 20, boxShadow: "0 4px 16px rgba(224,30,55,0.4)", flexShrink: 0 }}>🔥</div>
+      <div style={{ width: small ? 34 : 40, height: small ? 34 : 40, borderRadius: small ? 10 : 12, background: "var(--accent)", display: "grid", placeItems: "center", boxShadow: "0 2px 10px rgba(255,122,26,0.28)", flexShrink: 0 }}>
+        <FlameIcon size={small ? 18 : 21} color="#fff" />
+      </div>
       {!small && (
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em" }}>Algeria Fire Map</div>
-          <div style={{ fontSize: 11.5, color: "var(--text-muted)" }}>Live wildfire monitoring 🇩🇿</div>
+          <div style={{ fontSize: 11.5, color: "var(--text-muted)" }}>Live wildfire monitoring</div>
         </div>
       )}
     </div>
@@ -74,7 +77,7 @@ export default function TopBar(props: Props) {
         {/* Control dock (bottom / thumb zone) */}
         <div className="glass animate-in" style={{ position: "absolute", left: 12, right: 12, bottom: "calc(12px + env(safe-area-inset-bottom))", zIndex: 20, padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
           <InlineLegend />
-          <Segmented options={durationOpts} value={duration} onChange={onDurationChange} accent big />
+          <Segmented options={durationOpts} value={duration} onChange={onDurationChange} big />
           <Segmented options={styleOpts} value={styleKey} onChange={onStyleChange} big />
           <div style={{ fontSize: 9.5, color: "var(--text-muted)", textAlign: "center", opacity: 0.8 }}>
             Map © OpenStreetMap · Esri · Fires: NASA FIRMS
@@ -100,7 +103,7 @@ export default function TopBar(props: Props) {
       </div>
       <div>
         <div style={{ fontSize: 10.5, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 6 }}>Period</div>
-        <Segmented options={durationOpts} value={duration} onChange={onDurationChange} accent />
+        <Segmented options={durationOpts} value={duration} onChange={onDurationChange} />
       </div>
     </div>
   );
