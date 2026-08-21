@@ -6,6 +6,7 @@ import useSWR from "swr";
 import { fetchFires, firesKey, type FireCollection, type SelectedFire } from "@/lib/api";
 import { durationFor, passesFilter, withinAge, type DurationKey } from "@/lib/fire";
 import type { MapStyleKey } from "@/lib/mapStyles";
+import { useIsMobile } from "@/lib/useIsMobile";
 import TopBar from "./TopBar";
 import Legend from "./Legend";
 import FireDetailPanel from "./FireDetailPanel";
@@ -20,6 +21,7 @@ const FireMap = dynamic(() => import("./FireMap"), {
 });
 
 export default function FireDashboard() {
+  const isMobile = useIsMobile();
   const [duration, setDuration] = useState<DurationKey>("24h");
   const [styleKey, setStyleKey] = useState<MapStyleKey>("dark");
   const [selected, setSelected] = useState<SelectedFire | null>(null);
@@ -32,7 +34,6 @@ export default function FireDashboard() {
     keepPreviousData: true,
   });
 
-  // Always show Confirmed fires, within the selected recency window.
   const filtered = useMemo<FireCollection | undefined>(() => {
     if (!data) return data;
     const features = data.features.filter(
@@ -43,8 +44,9 @@ export default function FireDashboard() {
 
   return (
     <main style={{ position: "fixed", inset: 0, background: "var(--bg)" }}>
-      <FireMap data={filtered} selected={selected} onSelect={setSelected} styleKey={styleKey} />
+      <FireMap data={filtered} selected={selected} onSelect={setSelected} styleKey={styleKey} isMobile={isMobile} />
       <TopBar
+        isMobile={isMobile}
         styleKey={styleKey}
         onStyleChange={setStyleKey}
         duration={duration}
@@ -58,8 +60,8 @@ export default function FireDashboard() {
         loading={isLoading}
         error={error ? String(error.message ?? error) : undefined}
       />
-      <Legend />
-      {selected && <FireDetailPanel fire={selected} onClose={() => setSelected(null)} />}
+      {!isMobile && <Legend />}
+      {selected && <FireDetailPanel fire={selected} onClose={() => setSelected(null)} isMobile={isMobile} />}
     </main>
   );
 }
