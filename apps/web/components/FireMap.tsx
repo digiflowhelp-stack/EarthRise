@@ -28,6 +28,21 @@ const EMPTY: FireCollection = {
   properties: { generated_at: "", days: 1, count: 0, sources: [], aoi_bbox: "" },
 };
 
+// Arabic (and other RTL) labels need this plugin to shape/join glyphs correctly;
+// without it Arabic renders as disconnected, reversed letters. Set once, globally.
+let rtlPluginSet = false;
+function ensureRTLPlugin() {
+  if (rtlPluginSet) return;
+  rtlPluginSet = true;
+  try {
+    maplibregl
+      .setRTLTextPlugin("https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js", true)
+      .catch(() => {});
+  } catch {
+    /* already set or unavailable */
+  }
+}
+
 // Mask = whole world with Algeria punched out → dims neighbouring countries.
 const WORLD_RING = [[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]];
 const ALGERIA_RING = (algeriaBorder as { coordinates: number[][][] }).coordinates[0];
@@ -209,6 +224,7 @@ export default function FireMap({ data, selected, onSelect, styleKey, isMobile, 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
+    ensureRTLPlugin();
     const mobile = isMobileRef.current;
     const map = new maplibregl.Map({
       container: containerRef.current,
