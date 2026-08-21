@@ -10,6 +10,7 @@ import {
   relativeTime,
   satelliteName,
 } from "@/lib/fire";
+import { CloseIcon, FlameIcon, PinIcon } from "./Icons";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -69,13 +70,19 @@ export default function FireDetailPanel({ fire, onClose, isMobile }: { fire: Sel
           <span style={{ width: 12, height: 12, borderRadius: "50%", background: level.color, boxShadow: `0 0 12px ${level.color}` }} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>{level.label} intensity</span>
         </div>
-        <button onClick={onClose} aria-label="Close" style={{ width: 34, height: 34, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", fontSize: 17, lineHeight: 1 }}>×</button>
+        <button onClick={onClose} aria-label="Close" style={{ width: 34, height: 34, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", display: "grid", placeItems: "center" }}>
+          <CloseIcon size={15} />
+        </button>
       </div>
-      <div style={{ color: "var(--text-muted)", fontSize: 12.5, marginBottom: 14 }}>🔥 Active fire detection</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: 12.5, marginBottom: 14 }}>
+        <FlameIcon size={13} color="var(--accent)" /> Active fire detection
+      </div>
 
       {/* Location */}
       <div style={{ marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>📍 Location</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "var(--text-muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>
+          <PinIcon size={12} /> Location
+        </div>
         {placeLoading ? (
           <div style={{ color: "var(--text-muted)", fontSize: 13.5 }}>Locating…</div>
         ) : placeLine ? (
@@ -101,7 +108,7 @@ export default function FireDetailPanel({ fire, onClose, isMobile }: { fire: Sel
         </div>
         <div style={{ color: "var(--text-muted)", fontSize: 12, marginTop: 4 }}>Fire radiative power</div>
         <div style={{ marginTop: 10, height: 6, borderRadius: 99, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
-          <div style={{ width: `${frpPct}%`, height: "100%", borderRadius: 99, background: "var(--accent-grad)" }} />
+          <div style={{ width: `${frpPct}%`, height: "100%", borderRadius: 99, background: level.color }} />
         </div>
       </div>
 
