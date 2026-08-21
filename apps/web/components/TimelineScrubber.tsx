@@ -61,7 +61,7 @@ export default function TimelineScrubber({
   };
 
   const shell: React.CSSProperties = isMobile
-    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, bottom: "calc(12px + env(safe-area-inset-bottom))", zIndex: 22, padding: 14 }
+    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, maxWidth: 640, marginInline: "auto", bottom: "calc(12px + env(safe-area-inset-bottom))", zIndex: 22, padding: 14 }
     : { position: "absolute", insetInlineStart: 232, insetInlineEnd: 72, bottom: 16, zIndex: 22, padding: 14, maxWidth: 720, margin: "0 auto" };
 
   return (

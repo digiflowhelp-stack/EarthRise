@@ -140,16 +140,19 @@ export default function TopBar(props: Props) {
   if (isMobile) {
     return (
       <>
-        <div className="glass animate-in" style={{ position: "absolute", top: "calc(12px + env(safe-area-inset-top))", insetInlineStart: 12, insetInlineEnd: 12, zIndex: 20, padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+        <div className="glass animate-in" style={{ position: "absolute", top: "calc(12px + env(safe-area-inset-top))", insetInlineStart: 12, insetInlineEnd: 12, maxWidth: 640, marginInline: "auto", zIndex: 20, padding: "12px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 11, minWidth: 0 }}>
             <Brand small t={t} />
             <StatBadge {...props} compact />
           </div>
-          <LiveDot replay={historyMode} t={t} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            <LanguageSwitcher compact />
+            <LiveDot replay={historyMode} t={t} />
+          </div>
         </div>
 
         {!historyMode && (
-          <div className="glass animate-in" style={{ position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, bottom: "calc(12px + env(safe-area-inset-bottom))", zIndex: 20, padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div className="glass animate-in" style={{ position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, maxWidth: 640, marginInline: "auto", bottom: "calc(12px + env(safe-area-inset-bottom))", zIndex: 20, padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
             {showRisk ? <RiskLegend horizontal /> : <InlineLegend t={t} />}
             <Segmented options={durationOpts} value={duration} onChange={onDurationChange} big />
             <Segmented options={styleOpts} value={styleKey} onChange={onStyleChange} big />
@@ -160,9 +163,6 @@ export default function TopBar(props: Props) {
             <div style={{ display: "flex", gap: 8 }}>
               <button style={{ ...secondaryBtn, ...(showRisk ? activeToggle : {}) }} onClick={onToggleRisk}>{t("topBar.risk")}</button>
               <button style={secondaryBtn} onClick={onEnterHistory}><ClockIcon size={15} /> {t("topBar.replay")}</button>
-            </div>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <LanguageSwitcher compact />
             </div>
             <GitHubLink t={t} />
             <div style={{ fontSize: 9.5, color: "var(--text-muted)", textAlign: "center", opacity: 0.8 }}>

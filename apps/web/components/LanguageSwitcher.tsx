@@ -9,7 +9,7 @@ export default function LanguageSwitcher({ compact }: { compact?: boolean }) {
   const { locale, setLocale } = useLocale();
 
   return (
-    <div style={{ display: "flex", gap: 3, padding: 3, background: "rgba(255,255,255,0.06)", borderRadius: 10 }}>
+    <div style={{ display: "flex", gap: 3, padding: compact ? 2 : 3, background: "rgba(255,255,255,0.06)", borderRadius: 10, flexShrink: 0 }}>
       {LOCALES.map((l) => {
         const active = l.code === locale;
         return (
@@ -19,9 +19,9 @@ export default function LanguageSwitcher({ compact }: { compact?: boolean }) {
             aria-label={l.label}
             aria-pressed={active}
             style={{
-              minWidth: compact ? 34 : 40,
-              minHeight: compact ? 28 : 30,
-              padding: "0 8px",
+              minWidth: compact ? 30 : 40,
+              minHeight: compact ? 26 : 30,
+              padding: compact ? "0 6px" : "0 8px",
               borderRadius: 7,
               border: active ? "1px solid rgba(255,255,255,0.10)" : "1px solid transparent",
               cursor: "pointer",

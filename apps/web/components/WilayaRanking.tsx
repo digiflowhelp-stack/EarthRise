@@ -19,7 +19,7 @@ export default function WilayaRanking({ items, onSelect, isMobile, onClose }: Pr
   const max = items[0].count || 1;
 
   const shell: React.CSSProperties = isMobile
-    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, top: "calc(env(safe-area-inset-top) + 82px)", zIndex: 21, padding: 16 }
+    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, maxWidth: 520, marginInline: "auto", top: "calc(env(safe-area-inset-top) + 82px)", zIndex: 21, padding: 16 }
     : { position: "absolute", top: 16, insetInlineEnd: 16, zIndex: 19, padding: 16, width: 250 };
 
   return (

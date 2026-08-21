@@ -20,7 +20,7 @@ export default function LatestFires({ fires, onSelect, isMobile, onClose }: Prop
   if (fires.length === 0) return null;
 
   const shell: React.CSSProperties = isMobile
-    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, top: "calc(env(safe-area-inset-top) + 82px)", zIndex: 21, padding: 16 }
+    ? { position: "absolute", insetInlineStart: 12, insetInlineEnd: 12, maxWidth: 520, marginInline: "auto", top: "calc(env(safe-area-inset-top) + 82px)", zIndex: 21, padding: 16 }
     : { position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", zIndex: 19, padding: "14px 16px", width: 288, maxWidth: "calc(100vw - 480px)" };
 
   return (
