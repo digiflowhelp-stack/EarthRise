@@ -78,3 +78,30 @@ export async function fetchPlace(url: string): Promise<PlaceInfo> {
   if (!res.ok) throw new Error("place lookup failed");
   return res.json();
 }
+
+export interface RiskWilaya {
+  code: number;
+  name: string;
+  lat: number;
+  lng: number;
+  fwi: number;
+  class: string;
+  temp: number;
+  rh: number;
+  wind: number;
+}
+
+export interface RiskData {
+  generated_at: string;
+  wilayas: RiskWilaya[];
+}
+
+export function riskKey(): string {
+  return `${API_URL}/risk`;
+}
+
+export async function fetchRisk(url: string): Promise<RiskData> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("risk fetch failed");
+  return res.json();
+}
