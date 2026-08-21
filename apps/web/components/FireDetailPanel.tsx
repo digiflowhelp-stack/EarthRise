@@ -20,41 +20,62 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export default function FireDetailPanel({ fire, onClose }: { fire: SelectedFire; onClose: () => void }) {
+export default function FireDetailPanel({ fire, onClose, isMobile }: { fire: SelectedFire; onClose: () => void; isMobile: boolean }) {
   const p = fire.properties;
   const level = intensityForFrp(p.frp);
   const conf = confidenceMeta(p.confidence);
   const frpPct = Math.min(100, (p.frp / 120) * 100);
 
-  const { data: place, isLoading: placeLoading } = useSWR<PlaceInfo>(
-    placeKey(fire.lat, fire.lng),
-    fetchPlace,
-    { revalidateOnFocus: false, dedupingInterval: 3600_000 }
-  );
-
+  const { data: place, isLoading: placeLoading } = useSWR<PlaceInfo>(placeKey(fire.lat, fire.lng), fetchPlace, {
+    revalidateOnFocus: false,
+    dedupingInterval: 3600_000,
+  });
   const placeLine = [place?.town, place?.wilaya].filter(Boolean).join(", ");
 
+  const shell: React.CSSProperties = isMobile
+    ? {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        maxHeight: "64vh",
+        zIndex: 30,
+        padding: "8px 20px calc(20px + env(safe-area-inset-bottom))",
+        borderRadius: "20px 20px 0 0",
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto",
+      }
+    : {
+        position: "absolute",
+        top: 16,
+        right: 16,
+        bottom: 16,
+        width: 340,
+        maxWidth: "calc(100vw - 32px)",
+        zIndex: 20,
+        padding: 20,
+        display: "flex",
+        flexDirection: "column",
+        overflowY: "auto",
+      };
+
   return (
-    <aside
-      className="glass panel-in"
-      style={{ position: "absolute", top: 16, right: 16, bottom: 16, width: 340, maxWidth: "calc(100vw - 32px)", zIndex: 20, padding: 20, display: "flex", flexDirection: "column", gap: 4, overflowY: "auto" }}
-    >
+    <aside className={`glass ${isMobile ? "sheet-in" : "panel-in"}`} style={shell}>
+      {isMobile && <div style={{ width: 40, height: 4, borderRadius: 99, background: "rgba(255,255,255,0.25)", margin: "2px auto 12px" }} />}
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <span style={{ width: 12, height: 12, borderRadius: "50%", background: level.color, boxShadow: `0 0 12px ${level.color}` }} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>{level.label} intensity</span>
         </div>
-        <button onClick={onClose} aria-label="Close" style={{ width: 30, height: 30, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>
-          ×
-        </button>
+        <button onClick={onClose} aria-label="Close" style={{ width: 34, height: 34, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", fontSize: 17, lineHeight: 1 }}>×</button>
       </div>
       <div style={{ color: "var(--text-muted)", fontSize: 12.5, marginBottom: 14 }}>🔥 Active fire detection</div>
 
       {/* Location */}
       <div style={{ marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>
-          📍 Location
-        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>📍 Location</div>
         {placeLoading ? (
           <div style={{ color: "var(--text-muted)", fontSize: 13.5 }}>Locating…</div>
         ) : placeLine ? (
@@ -101,14 +122,12 @@ export default function FireDetailPanel({ fire, onClose }: { fire: SelectedFire;
         <Row label="Time of day">{dayNightLabel(p.daynight)}</Row>
         {p.brightness != null && <Row label="Brightness">{Math.round(p.brightness)} K</Row>}
         <Row label="Coordinates">
-          <span style={{ fontVariantNumeric: "tabular-nums" }}>
-            {fire.lat.toFixed(4)}, {fire.lng.toFixed(4)}
-          </span>
+          <span style={{ fontVariantNumeric: "tabular-nums" }}>{fire.lat.toFixed(4)}, {fire.lng.toFixed(4)}</span>
         </Row>
       </div>
 
-      <div style={{ marginTop: "auto", paddingTop: 16, color: "var(--text-muted)", fontSize: 11, lineHeight: 1.5 }}>
-        Source: NASA FIRMS (VIIRS / MODIS). Near-real-time — satellite detections can lag ~3 h and may be obscured by cloud.
+      <div style={{ marginTop: 16, paddingTop: 12, color: "var(--text-muted)", fontSize: 11, lineHeight: 1.5, borderTop: "1px solid var(--border)" }}>
+        Source: NASA FIRMS (VIIRS / MODIS). Near-real-time — detections can lag ~3 h and may be obscured by cloud.
       </div>
     </aside>
   );
