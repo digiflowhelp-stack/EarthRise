@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CONFIRMED_EXPLAINER } from "@/lib/fire";
+import { CONFIRMED_EXPLAINER, DETECTION_EXPLAINER } from "@/lib/fire";
 
 interface Props {
   shownCount: number;
@@ -23,7 +23,7 @@ function lastUpdated(iso: string | undefined): string {
 export default function StatBadge({ shownCount, totalCount, generatedAt, loading, error, compact }: Props) {
   const [showInfo, setShowInfo] = useState(false);
 
-  if (error) return <div style={{ color: "var(--fire-4)", fontSize: 13 }}>⚠️ {error}</div>;
+  if (error) return <div style={{ color: "var(--fire-4)", fontSize: 13 }}>{error}</div>;
 
   return (
     <div>
@@ -31,28 +31,29 @@ export default function StatBadge({ shownCount, totalCount, generatedAt, loading
         <span style={{ fontSize: compact ? 26 : 34, fontWeight: 700, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
           {shownCount.toLocaleString()}
         </span>
-        <span style={{ fontSize: 12.5, color: "var(--text-secondary)" }}>
+        <span style={{ fontSize: 12.5, color: "var(--text-secondary)", display: "inline-flex", alignItems: "center", gap: 6 }}>
           active fires
-          {loading && <span style={{ color: "var(--text-muted)" }}> · updating…</span>}
+          {/* Subtle info affordance → methodology popover */}
+          <span style={{ position: "relative", display: "inline-flex" }}>
+            <button
+              aria-label="How fires are confirmed"
+              onMouseEnter={() => setShowInfo(true)}
+              onMouseLeave={() => setShowInfo(false)}
+              onClick={() => setShowInfo((v) => !v)}
+              style={{ width: 16, height: 16, borderRadius: "50%", border: "1px solid var(--border-strong)", background: "transparent", color: "var(--text-muted)", cursor: "pointer", fontSize: 10, lineHeight: 1, display: "grid", placeItems: "center", padding: 0 }}
+            >
+              i
+            </button>
+            {showInfo && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: 290, maxWidth: "80vw", zIndex: 40, padding: 14, borderRadius: 12, background: "var(--surface-solid)", border: "1px solid var(--border-strong)", boxShadow: "var(--shadow)", fontSize: 12, lineHeight: 1.55, color: "var(--text-secondary)", fontWeight: 400, textAlign: "left" }}>
+                <div style={{ fontWeight: 700, color: "var(--text)", marginBottom: 5 }}>How fires are detected</div>
+                <div style={{ marginBottom: 10 }}>{DETECTION_EXPLAINER}</div>
+                <div style={{ fontWeight: 700, color: "var(--text)", marginBottom: 5 }}>How we confirm them</div>
+                {CONFIRMED_EXPLAINER}
+              </div>
+            )}
+          </span>
         </span>
-      </div>
-
-      <div style={{ position: "relative", display: "inline-flex", marginTop: 6 }}>
-        <button
-          onMouseEnter={() => setShowInfo(true)}
-          onMouseLeave={() => setShowInfo(false)}
-          onClick={() => setShowInfo((v) => !v)}
-          style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 9px", minHeight: 28, borderRadius: 99, background: "rgba(52,211,153,0.14)", border: "1px solid rgba(52,211,153,0.3)", color: "#5fe3ab", fontSize: 11, fontWeight: 600, cursor: "pointer" }}
-        >
-          ✓ Confirmed only
-          <span style={{ width: 14, height: 14, borderRadius: "50%", background: "rgba(255,255,255,0.12)", display: "grid", placeItems: "center", fontSize: 9, color: "var(--text-secondary)" }}>i</span>
-        </button>
-        {showInfo && (
-          <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: 268, maxWidth: "78vw", zIndex: 40, padding: 12, borderRadius: 12, background: "var(--surface-solid)", border: "1px solid var(--border-strong)", boxShadow: "var(--shadow)", fontSize: 12, lineHeight: 1.55, color: "var(--text-secondary)" }}>
-            <div style={{ fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>How we confirm fires</div>
-            {CONFIRMED_EXPLAINER}
-          </div>
-        )}
       </div>
 
       {!compact && (

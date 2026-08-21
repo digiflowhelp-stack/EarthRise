@@ -48,10 +48,12 @@ export function passesFilter(p: { confidence: Confidence; frp: number }, key: Fi
   return p.confidence === "high" && p.frp >= 15;
 }
 
-// Human-readable explanation of the "Confirmed" methodology (shown in a popover).
+// Human-readable explanation shown in the info popover.
+export const DETECTION_EXPLAINER =
+  "Fires are detected from space by NASA FIRMS. Polar-orbiting satellites — VIIRS on NOAA-20/21 & Suomi-NPP, and MODIS on Terra/Aqua — scan Algeria several times a day, flag thermal hotspots and measure each fire's radiative power (heat output in MW). Data arrives near-real-time, about 3 h after the satellite passes.";
+
 export const CONFIRMED_EXPLAINER =
-  "We show only Confirmed fires: NASA FIRMS detections flagged high-confidence with a fire radiative power of 15 MW or more. " +
-  "This removes low-confidence noise and small agricultural burns, leaving detections that are almost certainly real, active wildfires.";
+  "We then show only Confirmed fires: detections flagged high-confidence with a fire radiative power of 15 MW or more. This filters out low-confidence noise and small agricultural burns, leaving what is almost certainly a real, active wildfire.";
 
 // ---- Timing / recency ----
 export type DurationKey = "live" | "24h" | "48h";
