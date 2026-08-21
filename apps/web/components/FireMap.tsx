@@ -62,8 +62,10 @@ export default function FireMap({ data, selected, onSelect }: Props) {
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    map.on("error", (e) => console.error("[maplibre error]", e?.error?.message ?? e));
 
     map.on("load", () => {
+      map.resize();
       map.addSource(SOURCE_ID, { type: "geojson", data: EMPTY, generateId: true });
 
       // Density glow — dominant at overview zoom, fades out as you zoom in.
