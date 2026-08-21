@@ -5,7 +5,9 @@ import { MAP_STYLES, type MapStyleKey } from "@/lib/mapStyles";
 import Segmented from "./Segmented";
 import StatBadge from "./StatBadge";
 import RiskLegend from "./RiskLegend";
-import { ClockIcon, FlameIcon } from "./Icons";
+import { ClockIcon, FlameIcon, GitHubIcon } from "./Icons";
+
+const REPO_URL = "https://github.com/MoussaabBadla/algeria-fire-map";
 
 interface Props {
   isMobile: boolean;
@@ -85,6 +87,31 @@ const secondaryBtn: React.CSSProperties = {
   cursor: "pointer",
 };
 
+function GitHubLink({ top }: { top?: boolean }) {
+  return (
+    <a
+      href={REPO_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 7,
+        color: "var(--text-muted)",
+        fontSize: 11.5,
+        fontWeight: 600,
+        textDecoration: "none",
+        padding: "8px 0 0",
+        marginTop: top ? 8 : 0,
+        borderTop: top ? "1px solid var(--border)" : "none",
+      }}
+    >
+      <GitHubIcon size={14} /> Open source on GitHub
+    </a>
+  );
+}
+
 const activeToggle: React.CSSProperties = {
   border: "1px solid rgba(255,122,26,0.5)",
   background: "rgba(255,122,26,0.14)",
@@ -115,6 +142,7 @@ export default function TopBar(props: Props) {
               <button style={{ ...secondaryBtn, ...(showRisk ? activeToggle : {}) }} onClick={onToggleRisk}>Risk</button>
               <button style={secondaryBtn} onClick={onEnterHistory}><ClockIcon size={15} /> Replay</button>
             </div>
+            <GitHubLink />
             <div style={{ fontSize: 9.5, color: "var(--text-muted)", textAlign: "center", opacity: 0.8 }}>
               Map © OpenStreetMap · Esri · Fires: NASA FIRMS
             </div>
@@ -150,6 +178,7 @@ export default function TopBar(props: Props) {
           <ClockIcon size={15} /> Replay last 5 days
         </button>
       )}
+      <GitHubLink top />
     </div>
   );
 }
