@@ -1,6 +1,7 @@
 "use client";
 
-import type { SelectedFire } from "@/lib/api";
+import useSWR from "swr";
+import { fetchPlace, placeKey, type PlaceInfo, type SelectedFire } from "@/lib/api";
 import {
   confidenceMeta,
   dayNightLabel,
@@ -25,38 +26,51 @@ export default function FireDetailPanel({ fire, onClose }: { fire: SelectedFire;
   const conf = confidenceMeta(p.confidence);
   const frpPct = Math.min(100, (p.frp / 120) * 100);
 
+  const { data: place, isLoading: placeLoading } = useSWR<PlaceInfo>(
+    placeKey(fire.lat, fire.lng),
+    fetchPlace,
+    { revalidateOnFocus: false, dedupingInterval: 3600_000 }
+  );
+
+  const placeLine = [place?.town, place?.wilaya].filter(Boolean).join(", ");
+
   return (
     <aside
       className="glass panel-in"
-      style={{
-        position: "absolute",
-        top: 16,
-        right: 16,
-        bottom: 16,
-        width: 340,
-        maxWidth: "calc(100vw - 32px)",
-        zIndex: 20,
-        padding: 20,
-        display: "flex",
-        flexDirection: "column",
-        gap: 4,
-        overflowY: "auto",
-      }}
+      style={{ position: "absolute", top: 16, right: 16, bottom: 16, width: 340, maxWidth: "calc(100vw - 32px)", zIndex: 20, padding: 20, display: "flex", flexDirection: "column", gap: 4, overflowY: "auto" }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <span style={{ width: 12, height: 12, borderRadius: "50%", background: level.color, boxShadow: `0 0 12px ${level.color}` }} />
           <span style={{ fontSize: 15, fontWeight: 700 }}>{level.label} intensity</span>
         </div>
-        <button
-          onClick={onClose}
-          aria-label="Close"
-          style={{ width: 30, height: 30, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}
-        >
+        <button onClick={onClose} aria-label="Close" style={{ width: 30, height: 30, borderRadius: 999, border: "1px solid var(--border)", background: "var(--surface-hover)", color: "var(--text-secondary)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>
           ×
         </button>
       </div>
-      <div style={{ color: "var(--text-muted)", fontSize: 12.5, marginBottom: 16 }}>🔥 Active fire detection</div>
+      <div style={{ color: "var(--text-muted)", fontSize: 12.5, marginBottom: 14 }}>🔥 Active fire detection</div>
+
+      {/* Location */}
+      <div style={{ marginBottom: 16, padding: "12px 14px", background: "rgba(255,255,255,0.04)", borderRadius: 12, border: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>
+          📍 Location
+        </div>
+        {placeLoading ? (
+          <div style={{ color: "var(--text-muted)", fontSize: 13.5 }}>Locating…</div>
+        ) : placeLine ? (
+          <>
+            <div style={{ fontSize: 15, fontWeight: 600 }}>{place?.town ?? place?.wilaya}</div>
+            {place?.wilaya && place?.town && (
+              <div style={{ fontSize: 12.5, color: "var(--text-secondary)", marginTop: 1 }}>
+                Wilaya of {place.wilaya}
+                {place?.district ? ` · ${place.district}` : ""}
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{ fontSize: 13.5, color: "var(--text-secondary)" }}>Remote area</div>
+        )}
+      </div>
 
       {/* Fire power hero */}
       <div style={{ marginBottom: 6 }}>

@@ -60,3 +60,21 @@ export async function fetchFires(url: string): Promise<FireCollection> {
 export function firesKey(days: number): string {
   return `${API_URL}/fires?days=${days}`;
 }
+
+export interface PlaceInfo {
+  wilaya: string | null;
+  town: string | null;
+  district: string | null;
+  country: string | null;
+  display: string | null;
+}
+
+export function placeKey(lat: number, lng: number): string {
+  return `${API_URL}/place?lat=${lat.toFixed(4)}&lng=${lng.toFixed(4)}`;
+}
+
+export async function fetchPlace(url: string): Promise<PlaceInfo> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("place lookup failed");
+  return res.json();
+}
