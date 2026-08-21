@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
 import { fetchFires, firesKey, type FireCollection, type SelectedFire } from "@/lib/api";
+import { passesFilter, type FireFilterKey } from "@/lib/fire";
 import TopBar from "./TopBar";
 import Legend from "./Legend";
 import FireDetailPanel from "./FireDetailPanel";
@@ -20,6 +21,7 @@ const FireMap = dynamic(() => import("./FireMap"), {
 
 export default function FireDashboard() {
   const [days, setDays] = useState(1);
+  const [filter, setFilter] = useState<FireFilterKey>("confirmed");
   const [selected, setSelected] = useState<SelectedFire | null>(null);
 
   const { data, error, isLoading } = useSWR<FireCollection>(firesKey(days), fetchFires, {
@@ -28,16 +30,30 @@ export default function FireDashboard() {
     keepPreviousData: true,
   });
 
+  // Client-side filtering → instant toggling, no refetch.
+  const filtered = useMemo<FireCollection | undefined>(() => {
+    if (!data) return data;
+    const features = data.features.filter((f) => passesFilter(f.properties, filter));
+    return { ...data, features, properties: { ...data.properties, count: features.length } };
+  }, [data, filter]);
+
   return (
     <main style={{ position: "fixed", inset: 0, background: "var(--bg)" }}>
-      <FireMap data={data} selected={selected} onSelect={setSelected} />
+      <FireMap data={filtered} selected={selected} onSelect={setSelected} />
       <TopBar
         days={days}
         onDaysChange={(d) => {
           setDays(d);
           setSelected(null);
         }}
-        meta={data?.properties}
+        filter={filter}
+        onFilterChange={(f) => {
+          setFilter(f);
+          setSelected(null);
+        }}
+        shownCount={filtered?.features.length ?? 0}
+        totalCount={data?.properties.count ?? 0}
+        generatedAt={data?.properties.generated_at}
         loading={isLoading}
         error={error ? String(error.message ?? error) : undefined}
       />

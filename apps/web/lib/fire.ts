@@ -23,6 +23,31 @@ export function intensityForFrp(frp: number): IntensityLevel {
   return level;
 }
 
+// ---- Fire filter modes ----
+// FIRMS returns many low-confidence / low-intensity hotspots (often agricultural
+// burning), which aren't the wildfires people care about. These modes trim to the
+// real, significant fires.
+export type FireFilterKey = "confirmed" | "notable" | "all";
+
+export interface FireFilterDef {
+  key: FireFilterKey;
+  label: string;
+  description: string;
+}
+
+export const FIRE_FILTERS: FireFilterDef[] = [
+  { key: "confirmed", label: "Confirmed", description: "High confidence · strong intensity — real wildfires" },
+  { key: "notable", label: "Notable", description: "Nominal+ confidence · ≥8 MW" },
+  { key: "all", label: "All", description: "Every satellite hotspot" },
+];
+
+export function passesFilter(p: { confidence: Confidence; frp: number }, key: FireFilterKey): boolean {
+  if (key === "all") return true;
+  if (key === "notable") return p.confidence !== "low" && p.frp >= 8;
+  // confirmed
+  return p.confidence === "high" && p.frp >= 15;
+}
+
 const CONFIDENCE_META: Record<Confidence, { label: string; color: string }> = {
   low: { label: "Low", color: "#a4a7b2" },
   nominal: { label: "Nominal", color: "#ffa630" },
