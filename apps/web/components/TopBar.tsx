@@ -8,6 +8,8 @@ import RiskLegend from "./RiskLegend";
 import { ClockIcon, FlameIcon, GitHubIcon } from "./Icons";
 
 const REPO_URL = "https://github.com/MoussaabBadla/algeria-fire-map";
+const AUTHOR_URL = "https://github.com/MoussaabBadla";
+const AUTHOR_NAME = "Moussaab Badla";
 
 interface Props {
   isMobile: boolean;
@@ -89,26 +91,26 @@ const secondaryBtn: React.CSSProperties = {
 
 function GitHubLink({ top }: { top?: boolean }) {
   return (
-    <a
-      href={REPO_URL}
-      target="_blank"
-      rel="noopener noreferrer"
+    <div
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 7,
-        color: "var(--text-muted)",
         fontSize: 11.5,
-        fontWeight: 600,
-        textDecoration: "none",
         padding: "8px 0 0",
         marginTop: top ? 8 : 0,
         borderTop: top ? "1px solid var(--border)" : "none",
       }}
     >
-      <GitHubIcon size={14} /> Open source on GitHub
-    </a>
+      <a href={REPO_URL} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-secondary)", fontWeight: 600, textDecoration: "none" }}>
+        <GitHubIcon size={14} /> Open source
+      </a>
+      <span style={{ color: "var(--text-muted)" }}>·</span>
+      <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
+        by {AUTHOR_NAME}
+      </a>
+    </div>
   );
 }
 

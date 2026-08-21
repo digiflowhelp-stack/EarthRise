@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     "خريطة حرائق الجزائر", "حرائق الغابات الجزائر", "حرائق الجزائر مباشر", "حرائق القبائل",
     "خريطة الحرائق في الجزائر", "خطر الحرائق الجزائر", "رصد الحرائق بالأقمار الاصطناعية",
   ],
-  authors: [{ name: "Algeria Fire Map" }],
-  creator: "Algeria Fire Map",
+  authors: [{ name: "Moussaab Badla", url: "https://github.com/MoussaabBadla" }],
+  creator: "Moussaab Badla",
   category: "Environment",
   alternates: {
     canonical: "/",
@@ -76,6 +76,7 @@ const JSON_LD = {
   inLanguage: ["ar", "fr", "en"],
   description: DESCRIPTION,
   isAccessibleForFree: true,
+  author: { "@type": "Person", name: "Moussaab Badla", url: "https://github.com/MoussaabBadla" },
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   about: { "@type": "Thing", name: "Wildfire monitoring in Algeria" },
   areaServed: { "@type": "Country", name: "Algeria" },
