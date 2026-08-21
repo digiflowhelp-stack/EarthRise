@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Response
 
 from ..cache import get_cache
-from ..fwi import DayWeather, compute_fwi
+from ..fwi import DayWeather, compute_fwi_forecast
 from ..weather import fetch_wilaya_weather
 
 router = APIRouter()
@@ -50,7 +50,7 @@ def _series_for(w: dict) -> list[DayWeather]:
 @router.get("/risk")
 async def get_risk() -> Response:
     cache = get_cache()
-    body = await cache.get("risk:all:v2")
+    body = await cache.get("risk:all:v3")
     if body is None:
         weather = await fetch_wilaya_weather()
         wilayas = []
@@ -58,19 +58,24 @@ async def get_risk() -> Response:
             series = _series_for(w)
             if not series:
                 continue
-            fwi = compute_fwi(series)
-            last = series[-1]
+            # Outlook: [today, +1d, +2d]
+            forecast = compute_fwi_forecast(series, horizon=3)
+            if not forecast:
+                continue
+            today = forecast[0]
+            tw = series[-3] if len(series) >= 3 else series[-1]  # today's weather
             wilayas.append(
                 {
                     "code": w["code"],
                     "name": w["name"],
                     "lat": w["lat"],
                     "lng": w["lng"],
-                    "fwi": fwi["fwi"],
-                    "class": fwi["class"],
-                    "temp": round(last.temp, 1),
-                    "rh": round(last.rh),
-                    "wind": round(last.wind),
+                    "fwi": today["fwi"],
+                    "class": today["class"],
+                    "temp": round(tw.temp, 1),
+                    "rh": round(tw.rh),
+                    "wind": round(tw.wind),
+                    "forecast": forecast,
                 }
             )
         payload = {
@@ -78,6 +83,6 @@ async def get_risk() -> Response:
             "wilayas": sorted(wilayas, key=lambda x: x["fwi"], reverse=True),
         }
         body = json.dumps(payload, ensure_ascii=False)
-        await cache.set("risk:all:v2", body, RISK_TTL)
+        await cache.set("risk:all:v3", body, RISK_TTL)
 
     return Response(content=body, media_type="application/json", headers={"Cache-Control": "public, s-maxage=3600"})

@@ -23,7 +23,7 @@ async def _fetch_chunk(client: httpx.AsyncClient, group: list[tuple]) -> list[di
         "longitude": ",".join(f"{w[3]}" for w in group),
         "daily": DAILY,
         "past_days": 14,
-        "forecast_days": 1,
+        "forecast_days": 3,
         "timezone": "Africa/Algiers",
     }
     resp = await client.get(OPEN_METEO, params=params, timeout=30.0)

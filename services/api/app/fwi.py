@@ -135,3 +135,21 @@ def compute_fwi(series: list[DayWeather]) -> dict:
     bui = _bui(dmc, dc)
     fwi = _fwi(isi, bui)
     return {"fwi": round(fwi, 1), "isi": round(isi, 1), "bui": round(bui, 1), "class": danger_class(fwi)}
+
+
+def compute_fwi_forecast(series: list[DayWeather], horizon: int = 3) -> list[dict]:
+    """Spin up over the full series and return FWI for the LAST `horizon` days
+    (today + forecast days), so callers get a short fire-danger outlook."""
+    ffmc, dmc, dc = 85.0, 6.0, 15.0
+    n = len(series)
+    out: list[dict] = []
+    for i, w in enumerate(series):
+        ffmc = _ffmc(ffmc, w)
+        dmc = _dmc(dmc, w)
+        dc = _dc(dc, w)
+        if i >= n - horizon:
+            isi = _isi(ffmc, w.wind)
+            bui = _bui(dmc, dc)
+            fwi = _fwi(isi, bui)
+            out.append({"fwi": round(fwi, 1), "class": danger_class(fwi)})
+    return out
