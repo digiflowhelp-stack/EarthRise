@@ -1,10 +1,3 @@
-# 🔥 FireWatch — Devpost Project Submission
-
-Copy the section below into your Devpost project description. All images use raw GitHub URLs so they render anywhere. The logo, problem, solution, architecture diagram, tech stack, and judging-criteria matrix are all ready to paste.
-
----
-
-## Project description (paste into Devpost)
 
 <div align="center">
 
