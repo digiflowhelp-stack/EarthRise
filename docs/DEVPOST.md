@@ -1,27 +1,35 @@
 # 🔥 FireWatch — Devpost Project Submission
 
-Copy each section into the corresponding field on Devpost. All images use raw GitHub URLs so they render anywhere.
+Copy the section below into your Devpost project description. All images use raw GitHub URLs so they render anywhere. The logo, problem, solution, architecture diagram, tech stack, and judging-criteria matrix are all ready to paste.
 
 ---
 
-## 🔥 Project name
-
-**FireWatch**
-
----
-
-## 📝 Tagline
-
-**Real‑time wildfire intelligence from space.**
-Live fire detections, intensity, and climate risk — for the communities on the front line.
+## Project description (paste into Devpost)
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/apps/web/app/icon.svg" alt="FireWatch logo" width="140" height="140">
+
+<a href="https://github.com/digiflowhelp-stack/FireWatch">
+  <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/apps/web/app/icon.svg" alt="FireWatch — wildfire intelligence" width="160" height="160">
+</a>
+
+# 🔥 FireWatch
+
+### Real‑time wildfire intelligence from space.
+**Live fire detections, intensity, and climate risk — for the communities on the front line.**
+
+[![NextStep Hacks 2026 — Earth Forward](https://img.shields.io/badge/🏆_NextStep_Hacks_2026-Earth_Forward-e01e37?style=for-the-badge)](https://nextstep-hacks-2026.devpost.com/)
+[![API Docs](https://img.shields.io/badge/📡_API_Docs-Swagger_UI-2c9d68?style=for-the-badge)](https://github.com/digiflowhelp-stack/FireWatch#-api-reference)
+[![License: MIT](https://img.shields.io/badge/License-MIT-ffe066?style=for-the-badge)](https://github.com/digiflowhelp-stack/FireWatch/blob/main/LICENSE)
+
+[![Built with NASA FIRMS](https://img.shields.io/badge/Data-NASA%20FIRMS·Open--Meteo·OSM-ff7a1a?style=flat-square)](https://firms.modaps.eosdis.nasa.gov/)
+[![Stack](https://img.shields.io/badge/Stack-Next.js_·_FastAPI_·_PostGIS_·_Redis-a4133c?style=flat-square)](#-the-tech-stack)
+[![Langs](https://img.shields.io/badge/i18n-العربية·Français·English-2c9d68?style=flat-square)](#-built-for-the-front-line)
+
 </div>
 
 ---
 
-## 🌍 Inspiration
+## 📖 The story
 
 Every summer, wildfires sweep across the Mediterranean basin. Somewhere in the mountains, a farmer looks up and sees smoke on the horizon. Somewhere else, a civil-protection crew needs to know if the fire they fought yesterday has reignited. And every day, NASA's satellites orbit overhead, detecting every active wildfire on Earth — **and almost none of that knowledge reaches the people standing in front of the flames.**
 
@@ -31,43 +39,67 @@ The data exists. It's just locked in bulky scientific exports, scattered across 
 
 ---
 
-## 💡 What it does
+## 🌍 The Problem
 
-FireWatch transforms noisy fire-science data into a **community early-warning system**. It detects real fires from space, filters out the noise, adds live weather-driven fire danger, and puts it all on an interactive map — in plain language, on any device.
+<table>
+<tr>
+<td width="50%" valign="top">
 
-### 🔥 Live fire map
-Active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS) on an interactive MapLibre map. Points glow and scale with radiative power (FRP). Dark / satellite / light basemap styles.
+### 🛰️ Satellites see the fires. The public doesn't.
 
-### ✅ Confirmed only — no false alarms
-Server-side quality gate: confidence ≥ `high` and FRP ≥ 15 MW. Low-light noise, agricultural burns, and industrial gas flares never reach the map. Border-polygon clipping keeps cross-border fires out of the wrong region.
+NASA's VIIRS & MODIS instruments detect active wildfires within hours — but the data arrives as raw scientific exports aimed at researchers, not at people on the ground.
 
-### 📍 Tap a fire, know the place
-Power (MW), confidence, detection time, satellite — and reverse-geocoded **town · wilaya · district** via OpenStreetMap Nominatim.
+### 🔇 Noise drowns the signal.
 
-### ⏮️ 5-day timeline replay
-Scrub or play back the last five days; watch how a fire ignited and spread, with a live activity histogram. See exactly when it started and how it moved.
+Alongside real wildfires, the stream is full of low-confidence pixels, agricultural burns, and industrial gas flares. A naive map of "red dots near you" misleads as often as it informs.
 
-### 🌡️ Climate risk (FWI)
-The **Fire Weather Index** per region, computed from live Open-Meteo weather — the same standard used by EU fire services (EFFIS). Choropleth map, per-region ranking, 3-day forecast outlook. Know before the fire starts.
+### 🗣️ Language and access barriers.
 
-### 🧩 Incident clustering
-ST-DBSCAN-style spatiotemporal clustering groups raw pixels into **incidents** — start, end, peak intensity, duration, affected area — archived in PostGIS.
+Where information does exist, it's in foreign-language PDFs and scientist-facing consoles — not in Arabic or French, not on a phone, not in plain words.
 
-### 📊 National statistics
-Per-wilaya KPIs, rankings, seasonality, yearly trends, and cumulative "signature curves" — with a choropleth of the most affected regions. 69 wilayas, each with its own page.
+</td>
+<td width="50%" valign="top">
 
-### 🤖 ML-ready archive
-A border-clipped 0.1° training grid over the fire belt seeds a dataset for future risk-prediction models.
+### 🚨 What the front line actually needs
 
-### 🌍 Multilingual & accessible
-Arabic / French / English with full RTL layout; mobile bottom-sheet UX; RTL-aware animations.
+> **"Is a fire burning near me right now, how strong is it, and how dangerous will conditions be over the next days?"**
 
-### 🔎 SEO & shareable
-Per-locale Open Graph, sitemap, JSON-LD — every link previews rich everywhere.
+- ✅ Reliable, *confirmed* fire locations — filtered, debiased, trustworthy.
+- 🌡️ A plain-language read on **fire weather danger**, region by region.
+- ⏮️ History — how the fire near you ignited and spread over the last days.
+- 📱 A mobile-first experience in the local language, usable by anyone.
+
+Until now, the only public sources were researcher-oriented data consoles and static government bulletins. For front-line communities, that's noise.
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🏗️ How we built it
+## 💡 The Solution
+
+**FireWatch** transforms noisy fire-science data into a **community early-warning system**. It detects real fires from space, filters out the noise, adds live weather-driven fire danger, and puts it all on an interactive map — in plain language, on any device.
+
+### ✨ The Features
+
+<table>
+<tr><th>🔥 Feature</th><th>How it works</th></tr>
+<tr><td><b>Live fire map</b></td><td>Active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS) on an interactive MapLibre map. Points glow and scale with radiative power (FRP). Dark / satellite / light styles.</td></tr>
+<tr><td><b>Confirmed only</b></td><td>Server-side quality gate: confidence ≥ <code>high</code> and FRP ≥ 15 MW. Low-light noise and industrial flares never reach the map. Border-polygon clipping keeps cross-border fires out of the wrong region.</td></tr>
+<tr><td><b>Tap a fire, know the place</b></td><td>Power (MW), confidence, detection time, satellite — and reverse-geocoded <b>town · wilaya · district</b> via OpenStreetMap Nominatim.</td></tr>
+<tr><td><b>5-day timeline replay</b></td><td>Scrub or play back the last five days; watch how a fire ignited and spread, with a live activity histogram.</td></tr>
+<tr><td><b>Climate risk (FWI)</b></td><td>The <b>Fire Weather Index</b> per region, computed from live Open-Meteo weather — the same standard used by EU fire services (EFFIS). Choropleth map, per-region ranking, 3-day forecast outlook.</td></tr>
+<tr><td><b>Incident clustering</b></td><td>ST-DBSCAN-style spatiotemporal clustering groups raw pixels into <b>incidents</b> — start, end, peak intensity, duration — archived in PostGIS.</td></tr>
+<tr><td><b>National statistics</b></td><td>Per-wilaya KPIs, rankings, seasonality, yearly trends, and cumulative "signature curves" — with a choropleth of the most affected regions. 69 wilayas, each with its own page.</td></tr>
+<tr><td><b>ML-ready archive</b></td><td>A border-clipped 0.1° training grid over the fire belt seeds a dataset for future risk-prediction models.</td></tr>
+<tr><td><b>Multilingual & accessible</b></td><td>Arabic / French / English with RTL layout; mobile bottom-sheet; RTL-aware animations.</td></tr>
+<tr><td><b>SEO & shareable</b></td><td>Per-locale Open Graph, sitemap, JSON-LD — every link previews rich everywhere.</td></tr>
+</table>
+
+---
+
+## 🏗️ Architecture
 
 A genuine multi-service pipeline — a stateless frontend, an endpoint-owning backend, a cache layer, a persistent database, and a scheduler. Secrets stay server-side; the browser only calls the public API.
 
@@ -121,7 +153,9 @@ NASA FIRMS (VIIRS·MODIS) ─┐  Open-Meteo  ┌──────────�
             📱 Any device — dark glass UI, mobile bottom sheet, RTL
 ```
 
-### 🔧 The tech stack
+---
+
+## 🔧 The Tech Stack
 
 | Layer | Technology | Why it matters |
 |---|---|---|
@@ -138,50 +172,32 @@ NASA FIRMS (VIIRS·MODIS) ─┐  Open-Meteo  ┌──────────�
 
 ---
 
-## ⚔️ Challenges we ran into
+## 🌐 Built for the front line
 
-This project pushed us well past "put markers on a map."
+<table>
+<tr>
+<td width="33%" align="center">
 
-**🛰️ Noise filtering** — NASA FIRMS returns every thermal anomaly: gas flares, agricultural burns, low-confidence pixels. We had to build a server-side quality gate (`confidence ≥ high && FRP ≥ 15 MW`) and clip everything to Algeria's border polygon with Shapely, so Tunisian fires don't get counted toward border wilayas like Souk Ahras.
+### 🗣️ Languages
+العربية · Français · English<br/>Full RTL layout
 
-**🗺️ Map rendering** — MapLibre GL v6 renders a blank map (no tiles, `transform` undefined). We pinned to v4.7.1 and built custom overlays that survive basemap switches with `{ diff: false }`.
+</td>
+<td width="33%" align="center">
 
-**🌐 Arabic RTL** — Arabic labels render disconnected/reversed without `setRTLTextPlugin`, and the entire UI needs logical CSS properties (`insetInlineStart/End`) to flip correctly. We built RTL-aware animations and a mobile bottom-sheet that works in both directions.
+### 📱 Mobile-first
+Thumb-zone bottom sheet<br/>RTL-aware animations
 
-**🔥 Fire Weather Index** — Implementing the EFFIS-standard FWI from raw Open-Meteo data: moisture codes, wind adjustment, and the final danger class. No training data needed — it's a physically-based index, but getting the math right took real work.
+</td>
+<td width="33%" align="center">
 
-**🧩 ST-DBSCAN clustering** — Grouping thousands of raw detections into stable incidents with stable IDs, temporal split, and monotonic growth. Re-running is idempotent; new clusters reuse existing event IDs, and bridging clusters merge.
+### 🌍 Community
+Plain-language place names<br/>reverse-geocoded towns
 
-**⚡ Performance** — Versioned Redis cache keys (`fires:v2:days=N`, `risk:all:v3`), ETag headers, and chunked Open-Meteo batching (20 locations per request) to keep repeat queries sub-second.
+</td>
+</tr>
+</table>
 
----
-
-## 📚 What we learned
-
-**Geospatial engineering at scale** — Shapely border clipping with buffered polygons, ST-DBSCAN clustering, convex hulls for affected area, wilaya assignment from point-in-polygon.
-
-**Climate science** — The Fire Weather Index model: how temperature, humidity, wind, and rain combine into a single danger number. The same model EU fire services use.
-
-**Production-grade architecture** — A stateless frontend, an endpoint-owning backend, Redis caching, PostGIS persistence, and a scheduler — all wired with two env vars. No secrets in the browser.
-
-**Multilingual UX** — RTL layout isn't just flipping text. It's logical CSS properties, RTL-aware animations, bottom-sheet gestures, and making sure every component works in both directions.
-
-**Data quality matters more than data quantity** — Filtering out gas flares and agricultural burns was the difference between a useful tool and a misleading one.
-
----
-
-## 🚀 What's next
-
-**Persistence milestone** — We need Supabase (Postgres+PostGIS) and Cloudflare R2 to unlock:
-- Full history beyond 5 days
-- Daily feature/label snapshots → training dataset for ML risk models
-- Server-side incident clustering at scale
-- Burned-area detection (Sentinel NBR)
-- Alert subscriptions (SMS/push)
-
-**French translation** — Arabic and English are live; French is next for full Maghreb coverage.
-
-**Official stats overlay** — Integrate DGPC (Direction Générale de la Protection Civile) official fire statistics for validation.
+FireWatch isn't a science console — it's an early-warning system that reads like one. The gradient flame inside a radar watch ring, the fire-intensity colour ramp, the timeline scrubbing: every detail is designed for the person who needs an answer *now*.
 
 ---
 
@@ -210,13 +226,30 @@ Wildfires are among the 21st century's clearest climate symptoms. FireWatch take
 
 <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/desktop-dark%20(1).png" alt="FireWatch live map, dark theme">
 
-| 🌡️ Risk (FWI) view | 🛰️ Satellite imagery view |
-|---|---|
-| <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/desktop-risk%20(1).png" alt="Per-region Fire Weather Index choropleth" width="100%"> | <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/desktop-satellite%20(1).png" alt="Satellite basin imagery layer" width="100%"> |
+<table>
+<tr>
+<td width="50%" valign="top">
 
-| 📱 Mobile — bottom-sheet UX |
-|---|
-| <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/mobile%20(2)%20(1).png" alt="Mobile view with thumb-zone bottom sheet" width="32%"> |
+### 🌡️ Risk (FWI) view
+<img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/desktop-risk%20(1).png" alt="Per-region Fire Weather Index choropleth" width="100%">
+
+</td>
+<td width="50%" valign="top">
+
+### 🛰️ Satellite imagery view
+<img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/desktop-satellite%20(1).png" alt="Satellite basin imagery layer" width="100%">
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center" valign="top">
+
+### 📱 Mobile — bottom-sheet UX
+<img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/docs/screenshots/mobile%20(2)%20(1).png" alt="Mobile view with thumb-zone bottom sheet" width="32%">
+
+</td>
+</tr>
+</table>
 
 ---
 
