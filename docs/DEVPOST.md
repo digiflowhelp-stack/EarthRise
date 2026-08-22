@@ -10,9 +10,14 @@ Copy each section into the corresponding field on Devpost. All images use raw Gi
 
 ---
 
-## 📝 Elevator pitch
+## 📝 Tagline
 
-**Real‑time wildfire intelligence from space.** Live fire detections, intensity, and climate risk — for the communities on the front line.
+**Real‑time wildfire intelligence from space.**
+Live fire detections, intensity, and climate risk — for the communities on the front line.
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/digiflowhelp-stack/FireWatch/main/apps/web/app/icon.svg" alt="FireWatch logo" width="140" height="140">
+</div>
 
 ---
 
@@ -31,22 +36,22 @@ The data exists. It's just locked in bulky scientific exports, scattered across 
 FireWatch transforms noisy fire-science data into a **community early-warning system**. It detects real fires from space, filters out the noise, adds live weather-driven fire danger, and puts it all on an interactive map — in plain language, on any device.
 
 ### 🔥 Live fire map
-Active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS) on an interactive MapLibre map. Points glow and scale with radiative power (FRP). Dark / satellite / light styles.
+Active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS) on an interactive MapLibre map. Points glow and scale with radiative power (FRP). Dark / satellite / light basemap styles.
 
-### ✅ Confirmed only
-Server-side quality gate: confidence ≥ `high` and FRP ≥ 15 MW. Low-light noise and industrial flares never reach the map. Border-polygon clipping keeps cross-border fires out of the wrong region.
+### ✅ Confirmed only — no false alarms
+Server-side quality gate: confidence ≥ `high` and FRP ≥ 15 MW. Low-light noise, agricultural burns, and industrial gas flares never reach the map. Border-polygon clipping keeps cross-border fires out of the wrong region.
 
 ### 📍 Tap a fire, know the place
 Power (MW), confidence, detection time, satellite — and reverse-geocoded **town · wilaya · district** via OpenStreetMap Nominatim.
 
 ### ⏮️ 5-day timeline replay
-Scrub or play back the last five days; watch how a fire ignited and spread, with a live activity histogram.
+Scrub or play back the last five days; watch how a fire ignited and spread, with a live activity histogram. See exactly when it started and how it moved.
 
 ### 🌡️ Climate risk (FWI)
-The **Fire Weather Index** per region, computed from live Open-Meteo weather — the same standard used by EU fire services (EFFIS). Choropleth map, per-region ranking, 3-day forecast outlook.
+The **Fire Weather Index** per region, computed from live Open-Meteo weather — the same standard used by EU fire services (EFFIS). Choropleth map, per-region ranking, 3-day forecast outlook. Know before the fire starts.
 
 ### 🧩 Incident clustering
-ST-DBSCAN-style spatiotemporal clustering groups raw pixels into **incidents** — start, end, peak intensity, duration — archived in PostGIS.
+ST-DBSCAN-style spatiotemporal clustering groups raw pixels into **incidents** — start, end, peak intensity, duration, affected area — archived in PostGIS.
 
 ### 📊 National statistics
 Per-wilaya KPIs, rankings, seasonality, yearly trends, and cumulative "signature curves" — with a choropleth of the most affected regions. 69 wilayas, each with its own page.
@@ -55,7 +60,7 @@ Per-wilaya KPIs, rankings, seasonality, yearly trends, and cumulative "signature
 A border-clipped 0.1° training grid over the fire belt seeds a dataset for future risk-prediction models.
 
 ### 🌍 Multilingual & accessible
-Arabic / French / English with RTL layout; mobile bottom-sheet; RTL-aware animations.
+Arabic / French / English with full RTL layout; mobile bottom-sheet UX; RTL-aware animations.
 
 ### 🔎 SEO & shareable
 Per-locale Open Graph, sitemap, JSON-LD — every link previews rich everywhere.
@@ -133,13 +138,50 @@ NASA FIRMS (VIIRS·MODIS) ─┐  Open-Meteo  ┌──────────�
 
 ---
 
-## 🌐 Built for the front line
+## ⚔️ Challenges we ran into
 
-🗣️ **Languages** — العربية · Français · English, full RTL layout
-📱 **Mobile-first** — thumb-zone bottom sheet, RTL-aware animations
-🌍 **Community** — plain-language place names, reverse-geocoded towns
+This project pushed us well past "put markers on a map."
 
-FireWatch isn't a science console — it's an early-warning system that reads like one. The gradient flame inside a radar watch ring, the fire-intensity colour ramp, the timeline scrubbing: every detail is designed for the person who needs an answer *now*.
+**🛰️ Noise filtering** — NASA FIRMS returns every thermal anomaly: gas flares, agricultural burns, low-confidence pixels. We had to build a server-side quality gate (`confidence ≥ high && FRP ≥ 15 MW`) and clip everything to Algeria's border polygon with Shapely, so Tunisian fires don't get counted toward border wilayas like Souk Ahras.
+
+**🗺️ Map rendering** — MapLibre GL v6 renders a blank map (no tiles, `transform` undefined). We pinned to v4.7.1 and built custom overlays that survive basemap switches with `{ diff: false }`.
+
+**🌐 Arabic RTL** — Arabic labels render disconnected/reversed without `setRTLTextPlugin`, and the entire UI needs logical CSS properties (`insetInlineStart/End`) to flip correctly. We built RTL-aware animations and a mobile bottom-sheet that works in both directions.
+
+**🔥 Fire Weather Index** — Implementing the EFFIS-standard FWI from raw Open-Meteo data: moisture codes, wind adjustment, and the final danger class. No training data needed — it's a physically-based index, but getting the math right took real work.
+
+**🧩 ST-DBSCAN clustering** — Grouping thousands of raw detections into stable incidents with stable IDs, temporal split, and monotonic growth. Re-running is idempotent; new clusters reuse existing event IDs, and bridging clusters merge.
+
+**⚡ Performance** — Versioned Redis cache keys (`fires:v2:days=N`, `risk:all:v3`), ETag headers, and chunked Open-Meteo batching (20 locations per request) to keep repeat queries sub-second.
+
+---
+
+## 📚 What we learned
+
+**Geospatial engineering at scale** — Shapely border clipping with buffered polygons, ST-DBSCAN clustering, convex hulls for affected area, wilaya assignment from point-in-polygon.
+
+**Climate science** — The Fire Weather Index model: how temperature, humidity, wind, and rain combine into a single danger number. The same model EU fire services use.
+
+**Production-grade architecture** — A stateless frontend, an endpoint-owning backend, Redis caching, PostGIS persistence, and a scheduler — all wired with two env vars. No secrets in the browser.
+
+**Multilingual UX** — RTL layout isn't just flipping text. It's logical CSS properties, RTL-aware animations, bottom-sheet gestures, and making sure every component works in both directions.
+
+**Data quality matters more than data quantity** — Filtering out gas flares and agricultural burns was the difference between a useful tool and a misleading one.
+
+---
+
+## 🚀 What's next
+
+**Persistence milestone** — We need Supabase (Postgres+PostGIS) and Cloudflare R2 to unlock:
+- Full history beyond 5 days
+- Daily feature/label snapshots → training dataset for ML risk models
+- Server-side incident clustering at scale
+- Burned-area detection (Sentinel NBR)
+- Alert subscriptions (SMS/push)
+
+**French translation** — Arabic and English are live; French is next for full Maghreb coverage.
+
+**Official stats overlay** — Integrate DGPC (Direction Générale de la Protection Civile) official fire statistics for validation.
 
 ---
 
