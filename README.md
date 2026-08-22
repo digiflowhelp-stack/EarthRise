@@ -213,20 +213,20 @@ Counted six for six, judged exactly as the rules describe them.
 
 ### 🖥️ Desktop — live map view
 
-<img src="docs/screenshots/desktop-dark.png" alt="FireWatch live map, dark theme">
+<img src="docs/screenshots/desktop-dark (1).png" alt="FireWatch live map, dark theme">
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
 ### 🌡️ Risk (FWI) view
-<img src="docs/screenshots/desktop-risk.png" alt="Per-region Fire Weather Index choropleth" width="100%">
+<img src="docs/screenshots/desktop-risk (1).png" alt="Per-region Fire Weather Index choropleth" width="100%">
 
 </td>
 <td width="50%" valign="top">
 
 ### 🛰️ Satellite imagery view
-<img src="docs/screenshots/desktop-satellite.png" alt="Satellite basin imagery layer" width="100%">
+<img src="docs/screenshots/desktop-satellite (1).png" alt="Satellite basin imagery layer" width="100%">
 
 </td>
 </tr>
@@ -234,7 +234,7 @@ Counted six for six, judged exactly as the rules describe them.
 <td colspan="2" align="center" valign="top">
 
 ### 📱 Mobile — bottom-sheet UX
-<img src="docs/screenshots/mobile.png" alt="Mobile view with thumb-zone bottom sheet" width="32%">
+<img src="docs/screenshots/mobile (2) (1).png" alt="Mobile view with thumb-zone bottom sheet" width="32%">
 
 </td>
 </tr>
