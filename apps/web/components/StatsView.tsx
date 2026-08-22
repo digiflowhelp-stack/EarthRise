@@ -10,7 +10,7 @@ import { useLocale, useTranslations } from "@/lib/i18n/LocaleProvider";
 import { wilayaName, allWilayas } from "@/lib/i18n/wilayaNames";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NavMenu from "./NavMenu";
-import { FlameIcon } from "./Icons";
+import { FlameIcon, LogoMark } from "./Icons";
 import {
   ACCENT, Section, Pair, Tile, InsightCard, Seasonality, Yearly, Intensity, SignatureCurve,
   useNum, monthLabels, compact, intlLoc,
@@ -49,8 +49,8 @@ export function StatsHeader() {
   return (
     <header className="glass" style={{ position: "sticky", top: 0, zIndex: 41, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px clamp(14px, 4vw, 28px)", borderRadius: 0, borderInline: "none", borderTop: "none" }}>
       <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", color: "inherit" }}>
-        <div style={{ width: 34, height: 34, borderRadius: 10, background: "var(--accent)", display: "grid", placeItems: "center", flexShrink: 0 }}>
-          <FlameIcon size={18} color="#fff" />
+        <div style={{ width: 34, height: 34, borderRadius: 10, background: "#0a0c10", border: "1px solid rgba(255,255,255,0.09)", display: "grid", placeItems: "center", boxShadow: "0 2px 12px rgba(224,30,55,0.22)", flexShrink: 0 }}>
+          <LogoMark size={26} />
         </div>
         <span style={{ fontSize: 14.5, fontWeight: 700, letterSpacing: "-0.01em" }}>{t("common.appName")}</span>
       </Link>
