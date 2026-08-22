@@ -9,7 +9,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const notoArabic = Noto_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"] });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://firewatch.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
 const TITLE = "FireWatch — Real-time wildfire intelligence from space";
 const DESCRIPTION =
@@ -18,7 +18,7 @@ const DESCRIPTION =
   "متابعة حرائق الغابات في الجزائر مباشرة عبر الأقمار الاصطناعية.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase: SITE_URL ? new URL(SITE_URL) : undefined,
   applicationName: "FireWatch",
   title: { default: TITLE, template: "%s · FireWatch" },
   description: DESCRIPTION,

@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 import wilayasData from "@/lib/wilayas.json";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://firewatch.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
 const WILAYA_CODES = (wilayasData as unknown as { features: { properties: { code: number } }[] }).features.map((f) => f.properties.code);
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!SITE_URL) return [];
   const now = new Date();
   return [
     {

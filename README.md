@@ -13,7 +13,6 @@
 <br>
 
 [![NextStep Hacks 2026 — Earth Forward](https://img.shields.io/badge/🏆_NextStep_Hacks_2026-Earth_Forward-e01e37?style=for-the-badge)](https://nextstep-hacks-2026.devpost.com/)
-[![Live Demo](https://img.shields.io/badge/🔴_Live_Demo-firewatch-ff7a1a?style=for-the-badge)](https://firewatch.vercel.app)
 [![API Docs](https://img.shields.io/badge/📡_API_Docs-Swagger_UI-2c9d68?style=for-the-badge)](#-api-reference)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-ffe066?style=flat-square)](LICENSE)
@@ -214,9 +213,7 @@ Counted six for six, judged exactly as the rules describe them.
 
 ### 🖥️ Desktop — live map view
 
-<a href="https://firewatch.vercel.app">
-  <img src="docs/screenshots/desktop-dark.png" alt="FireWatch live map, dark theme">
-</a>
+<img src="docs/screenshots/desktop-dark.png" alt="FireWatch live map, dark theme">
 
 <table>
 <tr>
@@ -259,7 +256,7 @@ Ships ready for production: frontend on **Vercel**, backend on **Railway**, opti
    |---|---|---|
    | `NASA_FIRMS_MAP_KEY` | 🔑 yes | Free key from [FIRMS](https://firms.modaps.eosdis.nasa.gov/api/area/) — enables live fire data |
    | `REDIS_URL` | optional | Link the Redis plugin; in-memory cache is the fallback |
-   | `CORS_ORIGINS` | yes | The frontend's public URL (e.g. `https://firewatch.vercel.app`) |
+   | `CORS_ORIGINS` | yes | The frontend's public URL |
    | `DATABASE_URL` | optional | Supabase Postgres+PostGIS — enables history, stats & ingest |
    | `INGEST_ENABLED` / `ADMIN_TOKEN` | optional | Scheduler loop + admin token for manual ingest |
 
