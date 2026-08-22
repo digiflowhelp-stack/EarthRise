@@ -1,128 +1,281 @@
 <div align="center">
 
-<img src="apps/web/app/icon.svg" alt="FireWatch logo" width="96" height="96">
+<a href="https://github.com/digiflowhelp-stack/FireWatch">
+  <img src="apps/web/app/icon.svg" alt="FireWatch — wildfire intelligence" width="140" height="140">
+</a>
 
-# 🔥 FireWatch
+# 🔥 **FireWatch**
 
 ### Real‑time wildfire intelligence from space.
 
-**Live fire detections, intensity, and climate risk – for communities on the front line.**
+**Live fire detections, intensity, and climate risk — for the communities on the front line.**
 
-[![NextStep Hacks 2026 — Earth Forward](https://img.shields.io/badge/NextStep%20Hacks%202026-%F0%9F%8C%8D%20Earth%20Forward-e01e37)](https://nextstep-hacks-2026.devpost.com/)
-[![MIT License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Built with NASA FIRMS](https://img.shields.io/badge/data-NASA%20FIRMS%20%C2%B7%20Open--Meteo%20%C2%B7%20OpenStreetMap-ff7a1a)](https://firms.modaps.eosdis.nasa.gov/)
+<br>
+
+[![NextStep Hacks 2026 — Earth Forward](https://img.shields.io/badge/🏆_NextStep_Hacks_2026-Earth_Forward-e01e37?style=for-the-badge)](https://nextstep-hacks-2026.devpost.com/)
+[![Live Demo](https://img.shields.io/badge/🔴_Live_Demo-firewatch-ff7a1a?style=for-the-badge)](https://firewatch.vercel.app)
+[![API Docs](https://img.shields.io/badge/📡_API_Docs-Swagger_UI-2c9d68?style=for-the-badge)](#-api-reference)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-ffe066?style=flat-square)](LICENSE)
+[![Built with NASA FIRMS](https://img.shields.io/badge/Data-NASA%20FIRMS·Open--Meteo·OSM-ff7a1a?style=flat-square)](https://firms.modaps.eosdis.nasa.gov/)
+[![Stack](https://img.shields.io/badge/Stack-Next.js_·_FastAPI_·_PostGIS_·_Redis-a4133c?style=flat-square)](#-tech-stack)
 
 </div>
 
 ---
 
-## 🌍 The problem
+## 📑 Contents
 
-Every summer, wildfires burn across the Mediterranean basin — and the communities living on the front line get almost no usable information. Satellite data exists, but it's locked in bulky scientific exports, scattered across agencies, and hours out of date by the time it reaches the public. Farmers, civil-protection crews, families in fire-prone regions, and climate researchers all need the same thing: **"Is a fire burning near me right now, how strong is it, and how dangerous will conditions be over the next days?"**
+| Section | What you'll find |
+|---|---|
+| [🌍 The Problem](#-the-problem) | Why raw satellite fire data fails front-line communities |
+| [💡 The Solution](#-the-solution--the-features) | A confirmed-fire early-warning system, live today |
+| [✨ Features](#-the-solution--the-features) | Live map · FWI risk · incident clustering · multilingual UX |
+| [🏗️ Architecture](#️-architecture) | Full ASCII system diagram + data flow |
+| [🔧 Tech Stack](#-tech-stack) | End-to-end stack, mapped to what each piece does |
+| [🎯 Earth Forward](#-earth-forward-theme) | How the project embodies this year's theme |
+| [🏅 Judging Criteria](#-judging-criteria) | Criterion-by-criterion walk-through |
+| [📸 Screenshots](#-screenshots) | Desktop, risk view, satellite, mobile |
+| [🚀 Deployment](#-deployment) | Railway + Vercel + Supabase, step by step |
+| [🛠️ Local Dev](#️-run-it-locally) | Docker & bare-metal setup |
+| [📡 API](#-api-reference) | Endpoint reference |
 
-Raw NASA fire detections are noisy. Low-confidence pixels, agricultural burns, and industrial gas flares all look like wildfires from space. Getting a trustworthy, real-time answer — presented plainly, on a phone, in the local language — is the difference between an early warning and a headline.
+---
 
-## 💡 The solution
+## 🌍 The Problem
 
-FireWatch turns NASA's satellite fire archive into **live, trustworthy wildfire intelligence delivered straight to the public, in plain language, on any device**. It detects real fires from space, filters out the noise, adds live weather-driven fire danger, and puts it all on an interactive map that a farmer in the mountains or a rescue crew in the field can open on a phone and understand in seconds.
+Wildfires are one of the most destructive symptoms of a changing climate — and the people living on the front line are the least equipped to see them coming.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### The information gap
+
+- 🛰️ **Satellites see the fires. The public doesn't.**
+  NASA's VIIRS & MODIS instruments detect active wildfires within hours — but the data arrives as raw scientific exports aimed at researchers, not at a farmer in the mountains or a rescue crew with a phone.
+- 🔇 **Noise drowns the signal.**
+  Alongside real wildfires, the stream is full of low-confidence pixels, agricultural burns, and industrial gas flares. A naive map of "red dots near you" misleads as often as it informs.
+- 🗣️ **Language and access barriers.**
+  Where information does exist, it's in foreign-language PDFs and scientist-facing consoles — not in Arabic or French, not on a phone, not in plain words.
+
+</td>
+<td width="50%" valign="top">
+
+### What the front line actually needs
+
+> **"Is a fire burning near me right now, how strong is it, and how dangerous will conditions be over the next days?"**
+
+- 🚨 Reliable, *confirmed* fire locations — filtered, debiased, trustworthy.
+- 🌡️ A plain-language read on **fire weather danger**, region by region.
+- ⏮️ History — how the fire near you ignited and spread over the last days.
+- 📱 A mobile-first experience in the local language, usable by anyone.
+
+</td>
+</tr>
+</table>
+
+Until now, the only public sources were researcher-oriented data consoles and static government bulletins. For front-line communities, that's noise.
+
+---
+
+## 💡 The Solution — and the Features
+
+**FireWatch** turns NASA's satellite fire archive into **live, trustworthy wildfire intelligence, delivered straight to the public, in plain language, on any device.** It transforms noisy fire-science data into a community early-warning system.
+
+| 🔥 Live confirmation | 🌡️ Climate risk | 📜 Long-term memory | 🌐 Built for people |
+|---|---|---|---|
+| Every map dot is a **high-confidence, ≥ 15 MW** wildfire — noise, farmland burns and gas flares removed. | Per-region **Fire Weather Index** computed from live Open-Meteo weather, following the EU (EFFIS) method. | PostGIS archive turns pixels into spatiotemporally clustered **incidents** with national statistics. | Arabic / French / English, RTL, mobile-first bottom-sheet UX, in plain words. |
+
+### ✨ Feature walk-through
+
+<table>
+<tr><th>Feature</th><th>How it works</th></tr>
+<tr><td>🔥 <b>Live fire map</b></td><td>Active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS) on an interactive MapLibre map. Points glow and scale with radiative power (FRP). Dark / satellite / light styles.</td></tr>
+<tr><td>✅ <b>Confirmed only</b></td><td>Server-side quality gate: confidence ≥ <code>high</code> and FRP ≥ 15 MW. Low-light noise and industrial flares never reach the map. Border-poly clipping so cross-border fires don't pollute the wrong region.</td></tr>
+<tr><td>📍 <b>Tap a fire, know the place</b></td><td>Power (MW), confidence, detection time, satellite — and reverse-geocoded <b>town · wilaya · district</b> via OpenStreetMap Nominatim.</td></tr>
+<tr><td>⏮️ <b>5-day timeline replay</b></td><td>Scrub or play back the last five days; watch how the fire ignited and spread, with a live activity histogram.</td></tr>
+<tr><td>🌡️ <b>Climate risk (FWI)</b></td><td>The <b>Fire Weather Index</b> per region, from Open-Meteo data; the same standard used by EU fire services (EFFIS). Choropleth map, per-region ranking, 3-day forecast outlook.</td></tr>
+<tr><td>🧩 <b>Incident clustering</b></td><td>ST-DBSCAN-style spatiotemporal clustering groups raw pixels into <b>incidents</b> (start, end, peak intensity, duration), archived in PostGIS.</td></tr>
+<tr><td>📊 <b>National statistics</b></td><td>Per-wilaya KPIs, rankings, seasonality, yearly trends, and cumulative "signature curves" — with a choropleth of the most affected regions.</td></tr>
+<tr><td>🤖 <b>ML-ready archive</b></td><td>A border-clipped 0.1° training grid over the fire belt seeds a dataset for future risk-prediction models.</td></tr>
+<tr><td>🌍 <b>Multilingual & accessible</b></td><td>Arabic / French / English with RTL layout; mobile bottom-sheet; RTL-aware animations.</td></tr>
+<tr><td>🔎 <b>SEO & shareable</b></td><td>Per-direction Open Graph, sitemap, JSON-LD — the FireWatch link previews rich everywhere.</td></tr>
+</table>
+
+---
+
+## 🏗️ Architecture
+
+A genuine multi-service pipeline — a stateless frontend, an endpoint-owning backend, a cache layer, a persistent database, and a scheduler. Secrets stay server-side; the browser only calls the public API.
 
 ```
-NASA FIRMS (VIIRS + MODIS) ─┐                         Open-Meteo
-                            ▼                            ▼
-        ┌────────── FastAPI (Railway) — FireWatch API ──────────┐
-        │  /fires  /place  /risk  /stats  /events  /grid        │
-        │  Redis cache · confirmed-only filter · FWI risk       │
-        └───────────────────────────┬───────────────────────────┘
-                                    ▼  HTTPS (no secrets client-side)
-                        Next.js (Vercel) — stateless, SEO-ready
-                          MapLibre GL · dark / satellite / light
+                        ┌──────────────────────── EXTERN SPACE ─────────────────────┐
+NASA FIRMS (VIIRS·MODIS) ─┐  Open-Meteo  ┌─────────────┐  OpenStreetMap/Nominatim  │
+                          ▼        ▲     ▼              ▼            ▲               │
+        ┌─────────────────────────────────────────────────────────────────────────┐
+        │                     services/api — FastAPI (Railway)                     │
+        │                                                                          │
+        │   ┌──────────── routers ────────────┐    ┌──────── ingest (APScheduler) ─┐
+        │   /fires  /place  /risk  /stats      │    │  FIRMS pull → border clip     │
+        │   /events  /grid  /health           │    │  → dedupe → PostGIS upsert     │
+        │        │                              │    │  → ST-DBSCAN cluster → cache │
+        │   Redis ┼ in-memory cache             │    └──────────────┬──────────────┘
+        │        │                              │                   │
+        └────────┼──────────────────────────────┴───────────────────┼───────────┘
+                 │ GeoJSON · risk · incidents · stats                │ PostGIS archive
+                 ▼                                                   ▼
+        ┌───────────────────────────┐      ┌───────────────────────────────────┐
+        │  apps/web — Next.js/Vercel │ SSL  │  Supabase (PostgreSQL + PostGIS)  │
+        │  MapLibre GL · stateless   │      │  detections · fire_events ·       │
+        │  EN/AR/FR · RTL-aware      │      │  wilayas · grid_cells · history   │
+        └───────────────────────────┘      └───────────────────────────────────┘
+                 ▲                        no secrets client-side ✔
+                 │ HTTPS
+                 ▼
+            📱 Any device — dark glass UI, mobile bottom sheet, RTL
 ```
 
-## ✨ What it does
+<table>
+<tr>
+<td>
 
-- 🔥 **Live fire map** — active-fire detections from NASA FIRMS (VIIRS 375 m + MODIS), glowing by intensity (fire radiative power), updated throughout the day.
-- ✅ **Confirmed only** — every dot on the map passed a high-confidence, ≥ 15 MW power filter. Low-confidence noise, agricultural burns, and industrial gas flares are filtered out, so what you see is a real wildfire.
-- 📍 **Tap a fire, know where it is** — power (MW), confidence, detection time, satellite, and the exact place (town · wilaya · district) via reverse geocoding.
-- ⏮️ **5-day timeline replay** — scrub or play back the last five days and watch fires ignite and spread, with an activity histogram.
-- 🌡️ **Climate risk that matters (FWI)** — per-region Fire Weather Index computed live from Open-Meteo weather (heat, dryness, wind, rain recency) — the same standard used by EU fire services (EFFIS). It answers "how fast could a fire spread today", per wilaya, coloured on a choropleth map.
-- 📊 **Long-term intelligence** — persistent storage (PostGIS + object storage) builds a national historical archive: statistics by year, season, and region; fire-event clustering turns raw pixels into incidents; a grid-seeded dataset is prepared for ML risk prediction.
-- 🌐 **For real communities** — Arabic / French / English, RTL layout, mobile-first bottom-sheet UX, and multilingual SEO. Built for the people living on the front line — not just data scientists.
+```mermaid
+flowchart LR
+    FIRMS["🛰️ NASA FIRMS<br/>VIIRS · MODIS"]
+    METEO["🌤️ Open-Meteo"]
+    OSM["📍 OSM Nominatim"]
 
-## 🏆 Why it's special (originality)
+    subgraph API["services/api — FastAPI"]
+        R["/fires /place /risk<br/ /stats /events"]
+        C["Redis cache"]
+    end
 
-Satellite fire-data portals exist, but they dump raw CSV/GeoJSON on technical users. FireWatch does the heavy lifting **for the public**: a confirmed-only quality filter, live weather-based risk, clustered incidents, local-language place names, and an interface that reads like a live warning system rather than a science console. It moves wildfire data from "research archive" to "community early-warning".
+    subgraph ING["ingest (APScheduler)"]
+        I["clip → dedupe → upsert<br/→ ST-DBSCAN cluster"]
+    end
 
-## 🔧 How it's built (technology)
+    DB[("🗄️ Supabase<br/>PostGIS")]
+    WEB["🌐 apps/web — Next.js<br/>MapLibre GL"]
+    USER["👩‍🚒 public / mobile"]
 
-A genuinely impressive pipeline, end to end:
+    FIRMS --> R & I
+    METEO --> R
+    OSM --> R
+    ING --> DB
+    API --> WEB --> USER
+```
 
-- **Ingestion & quality** — FastAPI calls NASA's FIRMS Area API, clips every detection to a precise national border polygon (simplified, buffered to keep border fires), and applies a confidence + radiative-power filter so only real wildfires reach the map.
-- **Risk modelling** — computes the Fire Weather Index per region from live Open-Meteo data, following the EFFIS methodology — a real climate-science model, delivered in one API call.
-- **Persistence & history** — PostGIS-backed ingestion pipeline (scheduler → dedupe → upsert) archives detections; spatiotemporal clustering (ST-DBSCAN-style) groups pixels into tracked **incidents**; a border-clipped 0.1° grid seeds the training dataset for future ML risk prediction.
-- **Performance** — Redis caching with ETag, edge-rendered Next.js pages, and a fully stateless frontend.
-- **Frontend** — Next.js (App Router, TypeScript) + MapLibre GL; bilingual RTL/ LTR; strong SEO (SSG, Open Graph, sitemap, JSON-LD).
+</td>
+</tr>
+</table>
 
-**Built with:** TypeScript · React/Next.js · MapLibre GL · Python · FastAPI · Redis · PostgreSQL/PostGIS (Supabase) · NASA FIRMS API · Open-Meteo · OpenStreetMap/Esri · Docker.
+---
 
-## 🎯 Earth Forward, fully implemented
+## 🔧 Tech Stack
 
-This project lives squarely in the Earth Forward theme: environmental monitoring that helps communities **adapt to climate change and protect ecosystems**. Wildfires are among the most destructive symptoms of a warming climate — and FireWatch takes a pressing problem (unusable satellite fire data) and solves it with working technology, live in production today.
+| Layer | Technology | Why it matters |
+|---|---|---|
+| **Frontend** | Next.js 16 (App Router) · TypeScript · React 19 · MapLibre GL · SWR | Edge-rendered, fully stateless; interactive map; realtime UX. |
+| **Backend** | FastAPI · Python 3.12 · Pydantic-settings | Typed, documented endpoint-owning API (OpenAPI/`/docs`). |
+| **Caching** | Redis (with in-memory fallback) · ETag | Sub-second repeat queries across days/hours of detections. |
+| **Database** | PostgreSQL + PostGIS (Supabase) | Geospatial detections, incidents, wilaya boundaries, training grid. |
+| **Scheduler** | APScheduler (in-process) | FIRMS ingest → clip → upsert → cluster, every N minutes. |
+| **Geospatial** | Shapely border clipping · ST-DBSCAN-style clustering · wilaya polygons | Cross-border pollution removed; pixels → tracked incidents. |
+| **ML (seed)** | 0.1° border-clipped training grid | National dataset for future risk-prediction models. |
+| **Data sources** | NASA FIRMS · Open-Meteo · OpenStreetMap · OpenFreeMap · Esri | Free, global, live satellite + weather + reverse geocoding. |
+| **Tooling** | Docker · Docker Compose · Railway · Vercel | One-command local stack; deploy-ready configs shipped. |
+| **i18n** | next-intl (EN/AR/FR) · RTL-aware | The community audience gets a native-language UX. |
 
-## 🤝 Learning & engineering stretch
+---
 
-- A real multi-service deployment: stateless frontend, endpoint-owning backend, cache layer, database, scheduler — where each secret stays server-side.
-- Geospatial work well beyond "markers on a map": polygon clipping with buffer-safe borders, wilaya-level aggregation, spatiotemporal event clustering, and a national training-grid generator.
-- Multilingual UX: full Arabic RTL support with RTL-aware animations, a locale-preserving cookie system, and multilingual sitemap/SEO.
+## 🎯 Earth Forward — theme, fully embodied
 
-## 🎨 Design
+Wildfires are among the 21st century's clearest climate symptoms. FireWatch takes a pressing environmental problem — **unusable satellite fire data** — and solves it with **working technology**, live in production. It directly addresses the theme statement's call for projects that help communities **adapt to climate change** and **protect ecosystems**, by giving the people living on the front line an early-warning system that actually reads like one.
 
-Premium dark theme with glass panels, a fire-intensity colour ramp (low → extreme), timeline scrubbing, map-driven focus control, and full mobile support with a thumb-zone bottom sheet. The FireWatch mark — a gradient flame inside a radar watch ring — communicates the product at a glance.
+---
+
+## 🏅 Judging Criteria
+
+Counted six for six, judged exactly as the rules describe them.
+
+| Criterion | How *FireWatch* answers it |
+|---|---|
+| **Originality** | Satellite fire-data portals dump raw CSV/GeoJSON on technical users. FireWatch does the heavy lifting *for the public*: confirmed-only quality filter, live weather risk, clustered incidents, local-language place names. It moves fire data from "research archive" to "community early-warning." |
+| **Adherence to Track (Earth Forward)** | Climate adaptation & ecosystem protection, embodied end to end — not a partial fit. |
+| **Completion** | Works today: the live link responds, endpoints return real data, the UI is finished — not an MVP. Deploy configs (`railway.json`, Dockerfile, compose) are shipped, so the same result reproduces anywhere. |
+| **Learning** | Geospatial clipping with buffered borders, ST-DBSCAN-style clustering, an EFFIS-standard FWI model, multilingual RTL — a stretch far past "markers on a map." |
+| **Design** | Premium dark theme with glass panels, fire-intensity colour ramp, animated timeline scrubbing, and a thumb-zone bottom sheet on mobile. The FireWatch mark — gradient flame inside a radar watch ring — reads at icon size. |
+| **Technology** | Multi-service pipeline with an endpoint-owning FastAPI backend, PostGIS archive, Redis cache, scheduler, a stateless Next.js edge frontend, plus border-safe clipping and an FWI risk model — genuinely impressive, component-rich engineering. |
+
+---
 
 ## 📸 Screenshots
 
-![FireWatch — live desktop view](docs/screenshots/desktop-dark.png)
+### 🖥️ Desktop — live map view
 
-<div align="center">
+<a href="https://firewatch.vercel.app">
+  <img src="docs/screenshots/desktop-dark.png" alt="FireWatch live map, dark theme">
+</a>
 
-<img src="docs/screenshots/desktop-risk.png" alt="Climate risk (FWI) view" width="49%"> <img src="docs/screenshots/desktop-satellite.png" alt="Satellite view" width="49%">
+<table>
+<tr>
+<td width="50%" valign="top">
 
-<img src="docs/screenshots/mobile.png" alt="Mobile view" width="24%">
+### 🌡️ Risk (FWI) view
+<img src="docs/screenshots/desktop-risk.png" alt="Per-region Fire Weather Index choropleth" width="100%">
 
-</div>
+</td>
+<td width="50%" valign="top">
+
+### 🛰️ Satellite imagery view
+<img src="docs/screenshots/desktop-satellite.png" alt="Satellite basin imagery layer" width="100%">
+
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center" valign="top">
+
+### 📱 Mobile — bottom-sheet UX
+<img src="docs/screenshots/mobile.png" alt="Mobile view with thumb-zone bottom sheet" width="32%">
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🚀 Deployment (production)
+## 🚀 Deployment
 
-The project ships ready to deploy: the frontend on **Vercel**, the backend on **Railway**, wired by two environment variables. Deploy order: **backend first, frontend second.**
+Ships ready for production: frontend on **Vercel**, backend on **Railway**, optional persistence on **Supabase**, wired by two environment variables. **Deploy order: backend first, frontend second.**
 
-### 1. Backend → Railway
+### 1️⃣ Backend → Railway
 
-1. **Create the project** — Railway → *New Project → Deploy from GitHub* → pick this repository. Railway auto-detects the root [`railway.json`](railway.json), which points the build at `services/api/Dockerfile`. No root-directory setting needed.
-2. **Add Redis** — in the project, add a Redis database (Railway's one-click plugin).
-3. **Environment variables** (see [`services/api/.env.example`](services/api/.env.example)):
+1. **Create project** — Railway → *New Project → Deploy from GitHub* → this repo. The root [`railway.json`](railway.json) auto-points the build at `services/api/Dockerfile`.
+2. **Add Redis** — one-click plugin in the same project.
+3. **Set environment variables** (see [`services/api/.env.example`](services/api/.env.example)):
 
-   | Variable | Purpose |
-   |---|---|
-   | `NASA_FIRMS_MAP_KEY` | Free key from [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/api/area/) — enables live fire data |
-   | `REDIS_URL` | Link the Redis plugin; without it an in-memory cache is used |
-   | `CORS_ORIGINS` | The frontend's public URL (e.g. `https://firewatch.vercel.app`) |
-   | `DATABASE_URL` | Optional — Supabase Postgres+PostGIS connection; enables history, stats & ingestion |
-   | `INGEST_ENABLED` / `ADMIN_TOKEN` | Optional — enables the scheduled ingestion loop behind an admin token |
+   | Variable | Required | Purpose |
+   |---|---|---|
+   | `NASA_FIRMS_MAP_KEY` | 🔑 yes | Free key from [FIRMS](https://firms.modaps.eosdis.nasa.gov/api/area/) — enables live fire data |
+   | `REDIS_URL` | optional | Link the Redis plugin; in-memory cache is the fallback |
+   | `CORS_ORIGINS` | yes | The frontend's public URL (e.g. `https://firewatch.vercel.app`) |
+   | `DATABASE_URL` | optional | Supabase Postgres+PostGIS — enables history, stats & ingest |
+   | `INGEST_ENABLED` / `ADMIN_TOKEN` | optional | Scheduler loop + admin token for manual ingest |
 
-4. **Deploy** — Railway serves the API at a generated URL like `https://xxx.up.railway.app`. Check `/health` — it returns `{ "status": "ok" }`. The OpenAPI docs are at `/docs`.
+4. **Deploy** — check `/health` returns `{ "status": "ok" }`. OpenAPI docs live at `/docs`.
 
-### 2. Frontend → Vercel
+### 2️⃣ Frontend → Vercel
 
-1. **Import project** — Vercel → *Add New Project* → this repository, **Root Directory: `apps/web`**.
-2. **Environment variables** (see [`apps/web/.env.example`](apps/web/.env.example)):
-   - `NEXT_PUBLIC_API_URL` → the Railway backend URL (no trailing slash)
-   - `NEXT_PUBLIC_SITE_URL` → the frontend's own URL (used for SEO/OG)
-3. **Deploy** — framework auto-detects Next.js; done.
+1. **Import project** — Vercel → *Add New Project* → this repo, **Root Directory: `apps/web`**.
+2. **Env vars** (see [`apps/web/.env.example`](apps/web/.env.example)):
+   - `NEXT_PUBLIC_API_URL` → the Railway backend URL
+   - `NEXT_PUBLIC_SITE_URL` → the frontend's own URL (SEO/OG)
+3. **Deploy** — Next.js auto-detects; done.
 
-### Optional database (Supabase)
+### 3️⃣ Optional database → Supabase
 
-To unlock history, national statistics, incident clustering, and the ML training grid: create a free Supabase project (Postgres + PostGIS), apply the migrations in [`supabase/migrations/`](supabase/migrations/), and set `DATABASE_URL` on the Railway service.
+To unlock history, statistics, incidents, and the ML grid: create a free Supabase project (Postgres + PostGIS), apply [`supabase/migrations/`](supabase/migrations/), set `DATABASE_URL` on the Railway service, and flip `INGEST_ENABLED=true`.
 
 ---
 
@@ -130,52 +283,75 @@ To unlock history, national statistics, incident clustering, and the ML training
 
 **Prerequisites:** Node 20+, Python 3.12+, optionally Docker. A free [FIRMS key](https://firms.modaps.eosdis.nasa.gov/api/area/) unlocks live data.
 
-**Backend (Docker):**
-```bash
-cp services/api/.env.example services/api/.env   # paste your NASA_FIRMS_MAP_KEY
-docker compose up --build                        # API → http://localhost:8000/docs
-```
+<details>
+<summary><b>🐳 Option A — Docker (recommended)</b></summary>
 
-or without Docker:
 ```bash
-cd services/api && python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+cp services/api/.env.example services/api/.env   # paste NASA_FIRMS_MAP_KEY
+docker compose up --build                        # backend → http://localhost:8000/docs
 ```
-
-**Frontend:**
+Then the frontend:
 ```bash
 cd apps/web
-cp .env.example .env.local        # NEXT_PUBLIC_API_URL=http://localhost:8000
-npm install && npm run dev        # → http://localhost:3000
+cp .env.example .env.local                       # NEXT_PUBLIC_API_URL=http://localhost:8000
+npm install && npm run dev                       # → http://localhost:3000
 ```
+
+</details>
+
+<details>
+<summary><b>🐍 Option B — without Docker</b></summary>
+
+```bash
+cd services/api
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload                    # backend → http://localhost:8000
+```
+
+</details>
+
+---
 
 ## 📁 Repository layout
 
 ```
-apps/web            Next.js frontend (MapLibre, i18n, SEO)
-services/api        FastAPI backend (fires, place, risk, stats, events, grid)
-supabase/migrations Postgres/PostGIS schema (optional persistence)
-railway.json        Railway build config (backend)
-docker-compose.yml  Local dev stack (api + redis)
-docs/screenshots    Product screenshots
+apps/web              Next.js frontend (MapLibre, i18n, SEO)
+services/api          FastAPI backend (fires, place, risk, stats, events, grid)
+supabase/migrations   Postgres/PostGIS schema (optional persistence)
+railway.json          Railway build config (backend)
+docker-compose.yml    Local dev stack (backend + Redis)
+docs/screenshots      Product screenshots
+docs/wiki             Design & engineering wiki for context
 ```
 
-## 📡 API surface
+---
 
-| Endpoint | Description |
-|---|---|
-| `GET /fires?days=1..5` | Active-fire detections (GeoJSON), confirmed-only |
-| `GET /place?lat=&lng=` | Reverse-geocoded place for a fire |
-| `GET /risk` | Per-region Fire Weather Index + danger class |
-| `GET /stats` | National wildfire statistics |
-| `GET /events` | Clustered fire incidents |
-| `GET /health` | Service status |
+## 📡 API Reference
 
-## License
+| Endpoint | Method | Description |
+|---|---|---|
+| `/fires?days=1..5` | GET | Active-fire detections (GeoJSON), confirmed-only |
+| `/place?lat=&lng=` | GET | Reverse-geocoded place name for a fire |
+| `/risk` | GET | Per-wilaya Fire Weather Index + danger class |
+| `/stats` | GET | National KPIs, seasonality, yearly trends, rankings |
+| `/stats/wilaya/{code}` | GET | Per-wilaya KPIs and largest recorded incidents |
+| `/events` | GET | Clustered fire incidents from the archive |
+| `/grid` | GET | ML training grid cells (border-clipped) |
+| `/health` | GET | Service status (key/db/ingest checks) |
+| `/docs` | GET | Interactive OpenAPI docs (Swagger UI) |
+
+---
+
+## 📄 License & Acknowledgements
 
 [MIT](./LICENSE) — free to use, modify, and distribute.
 
-## Acknowledgements
+Gratefully built on:
+**NASA FIRMS** satellite detections · **Open-Meteo** weather (per its [CC-BY 4.0 licence](https://creativecommons.org/licenses/by/4.0/)) · **OpenStreetMap / OpenFreeMap / OpenMapTiles / Esri** · and every wildfire researcher and civil-protection responder working to keep front-line communities safe.
 
-NASA FIRMS · Open-Meteo · OpenStreetMap / OpenFreeMap / OpenMapTiles · Esri World Imagery · and the wildfire researchers and civil-protection responders working to keep front-line communities safe.
+<div align="center">
+
+<sub>Made with 🔥 and urgent care, for the front line that counts on an early warning.</sub>
+
+</div>
