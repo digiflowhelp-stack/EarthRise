@@ -9,23 +9,24 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const notoArabic = Noto_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"] });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.algeriafiremap.site";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://firewatch.vercel.app";
 
-const TITLE = "Algeria Fire Map — Live wildfire tracking | خريطة حرائق الجزائر";
+const TITLE = "FireWatch — Real-time wildfire intelligence from space";
 const DESCRIPTION =
-  "Real-time satellite wildfire monitoring across Algeria: live fire detections, intensity, and fire-risk by wilaya, from NASA FIRMS. " +
-  "Suivi en temps réel des feux de forêt en Algérie. " +
+  "Real-time wildfire intelligence from space. Live fire detections, intensity, and climate risk — for communities on the front line. " +
+  "Satellite monitoring across Algeria from NASA FIRMS. " +
   "متابعة حرائق الغابات في الجزائر مباشرة عبر الأقمار الاصطناعية.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  applicationName: "Algeria Fire Map",
-  title: { default: TITLE, template: "%s · Algeria Fire Map" },
+  applicationName: "FireWatch",
+  title: { default: TITLE, template: "%s · FireWatch" },
   description: DESCRIPTION,
   keywords: [
     // English
-    "Algeria fire map", "wildfire Algeria", "Algeria wildfires", "forest fire Algeria",
-    "NASA FIRMS Algeria", "live fire map Algeria", "fire risk Algeria", "VIIRS MODIS Algeria",
+    "FireWatch", "wildfire intelligence", "wildfire map", "live fire detections", "climate risk",
+    "Algeria fire map", "wildfire Algeria", "forest fire Algeria",
+    "NASA FIRMS", "live fire map", "fire risk", "VIIRS MODIS",
     // French
     "carte des feux Algérie", "feux de forêt Algérie", "incendie Algérie", "feux Kabylie",
     "risque incendie Algérie", "surveillance des feux Algérie",
@@ -33,8 +34,8 @@ export const metadata: Metadata = {
     "خريطة حرائق الجزائر", "حرائق الغابات الجزائر", "حرائق الجزائر مباشر", "حرائق القبائل",
     "خريطة الحرائق في الجزائر", "خطر الحرائق الجزائر", "رصد الحرائق بالأقمار الاصطناعية",
   ],
-  authors: [{ name: "Moussaab Badla", url: "https://github.com/MoussaabBadla" }],
-  creator: "Moussaab Badla",
+  authors: [{ name: "Digiflow", url: "https://github.com/digiflowhelp-stack" }],
+  creator: "Digiflow",
   category: "Environment",
   alternates: {
     canonical: "/",
@@ -42,10 +43,10 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Algeria Fire Map",
+    siteName: "FireWatch",
     title: TITLE,
     description:
-      "Live satellite wildfire monitoring across Algeria — detections, intensity and fire-risk by wilaya. خريطة حرائق الجزائر مباشرة.",
+      "Real-time wildfire intelligence from space. Live fire detections, intensity, and climate risk — for communities on the front line.",
     url: SITE_URL,
     locale: "ar_DZ",
     alternateLocale: ["fr_DZ", "en_US"],
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: TITLE,
-    description: "Real-time wildfire monitoring for Algeria — NASA FIRMS detections + fire-risk by wilaya.",
+    description: "Real-time wildfire intelligence from space — live detections, intensity, and climate risk via NASA FIRMS.",
   },
   robots: {
     index: true,
@@ -72,7 +73,7 @@ export const viewport: Viewport = {
 const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "Algeria Fire Map",
+  name: "FireWatch",
   alternateName: ["خريطة حرائق الجزائر", "Carte des feux de forêt en Algérie"],
   url: SITE_URL,
   applicationCategory: "https://schema.org/GovernmentApplication",
@@ -80,7 +81,7 @@ const JSON_LD = {
   inLanguage: ["ar", "fr", "en"],
   description: DESCRIPTION,
   isAccessibleForFree: true,
-  author: { "@type": "Person", name: "Moussaab Badla", url: "https://github.com/MoussaabBadla" },
+  author: { "@type": "Organization", name: "Digiflow", url: "https://github.com/digiflowhelp-stack" },
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   about: { "@type": "Thing", name: "Wildfire monitoring in Algeria" },
   areaServed: { "@type": "Country", name: "Algeria" },

@@ -1,10 +1,10 @@
-# CLAUDE.md — Algeria Fire Map
+# CLAUDE.md — FireWatch
 
 Project context for Claude Code / contributors. Keep this current.
 
 ## What it is
-Open-source, real-time wildfire monitoring + fire-risk for Algeria.
-**Live:** https://www.algeriafiremap.site (apex `algeriafiremap.site` → www) · **License:** MIT · **Author:** Moussaab Badla.
+Open-source, real-time wildfire intelligence from space — live fire detections, intensity, and climate risk, for communities on the front line (currently covering Algeria).
+**Repo:** https://github.com/digiflowhelp-stack/FireWatch · **License:** MIT · **Team:** Digiflow.
 
 ## Architecture
 ```
@@ -41,7 +41,6 @@ npm run build                          # always run before deploying
 
 ## Deploy & CI/CD
 - Push to `main` auto-deploys **both**: Railway (backend, builds from repo-root `railway.json`) + Vercel (frontend, root dir `apps/web`).
-- **Wait for a Vercel deploy** by polling the API for `state == "READY"` (token at `~/Library/Application Support/com.vercel.cli/auth.json`; project `prj_6Gq6gq9kHLqzHREe8iOkHJ1UdYoe`, team `team_Sv5qB0eJAA7NHZc1jbnfAYdO`). Railway: `railway service status --service algeria-fire-map`.
 - Custom domain + CORS: `CORS_ORIGINS` on Railway includes www + apex. Env vars set on Railway (backend) and Vercel (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_SITE_URL`).
 
 ## Gotchas (read before changing these)
@@ -63,7 +62,7 @@ npm run build                          # always run before deploying
 Live fire map (dark/satellite/light, Algeria border + dimmed neighbours, bilingual labels) · confirmed-only filter w/ explainer · fire detail + reverse-geocoded place · Live(anchored to freshest data)/24h/48h · Latest fires · Most-affected wilayas · 5-day Replay timeline · **FWI fire-risk layer + 3-day forecast** · mobile bottom-sheet UX · SEO/OG/favicon/manifest · **English + Arabic (RTL, incl. wilaya labels)** · GitHub/author credit.
 
 ## What's next — Persistence milestone (blocked on accounts)
-Needs the user to provide: **Supabase** `DATABASE_URL` (Postgres+PostGIS) and **Cloudflare R2** keys (`R2_ACCOUNT_ID/ACCESS_KEY_ID/SECRET_ACCESS_KEY`, bucket `algeria-fire-map`). Then build:
+Needs the user to provide: **Supabase** `DATABASE_URL` (Postgres+PostGIS) and **Cloudflare R2** keys (`R2_ACCOUNT_ID/ACCESS_KEY_ID/SECRET_ACCESS_KEY`, bucket `firewatch`). Then build:
 1. PostGIS schema — `detections` (raw + dedup index), `fire_events` (incidents).
 2. Ingestion cron (Railway) — FIRMS → dedupe → upsert; archive raw to R2.
 3. Server-side clustering (ST-DBSCAN) — stable incident IDs, first/last-seen, affected-area hull, wilaya, max FRP.

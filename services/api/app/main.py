@@ -1,4 +1,4 @@
-"""FastAPI entry point — the single backend for Algeria Fire Map.
+"""FastAPI entry point — the single backend for FireWatch.
 
 Owns all data endpoints and (later) ingestion, geospatial, and AI. Holds all
 secrets (FIRMS key, DB, etc.); the Next.js frontend is stateless and only
@@ -32,9 +32,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Algeria Fire Map API",
+    title="FireWatch API",
     version="0.2.0",
-    description="Wildfire monitoring API for Algeria (NASA FIRMS + more).",
+    description="Real-time wildfire intelligence from space — live fire detections, intensity, and climate risk (NASA FIRMS + more).",
     lifespan=lifespan,
 )
 

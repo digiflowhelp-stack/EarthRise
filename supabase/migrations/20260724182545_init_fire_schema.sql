@@ -1,4 +1,4 @@
--- Algeria Fire Map — persistence schema (Milestone 2/3)
+-- FireWatch — persistence schema (Milestone 2/3)
 -- detections (raw satellite pixels) + fire_events (clustered incidents) + wilayas seed.
 -- Everything EPSG:4326. Spatial ops via PostGIS; distance/area math casts to geography.
 

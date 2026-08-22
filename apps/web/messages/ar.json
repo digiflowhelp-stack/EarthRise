@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "خريطة حرائق الجزائر",
-    "tagline": "رصد حرائق الغابات مباشرة",
+    "appName": "FireWatch",
+    "tagline": "استخبارات الحرائق لحظياً من الفضاء",
     "openSource": "مفتوح المصدر",
     "by": "بواسطة {name}",
     "mapAttribution": "الخريطة © OpenStreetMap · Esri · الحرائق: NASA FIRMS",

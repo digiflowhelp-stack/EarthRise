@@ -8,11 +8,11 @@ import StatBadge from "./StatBadge";
 import RiskLegend from "./RiskLegend";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NavMenu from "./NavMenu";
-import { ClockIcon, FlameIcon, GitHubIcon, PinIcon } from "./Icons";
+import { ClockIcon, FlameIcon, GitHubIcon, LogoMark, PinIcon } from "./Icons";
 
-const REPO_URL = "https://github.com/MoussaabBadla/algeria-fire-map";
-const AUTHOR_URL = "https://github.com/MoussaabBadla";
-const AUTHOR_NAME = "Moussaab Badla";
+const REPO_URL = "https://github.com/digiflowhelp-stack/FireWatch";
+const AUTHOR_URL = "https://github.com/digiflowhelp-stack";
+const AUTHOR_NAME = "Digiflow";
 
 interface Props {
   isMobile: boolean;
@@ -40,8 +40,20 @@ type T = ReturnType<typeof useTranslations>;
 function Brand({ small, t }: { small?: boolean; t: T }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{ width: small ? 34 : 40, height: small ? 34 : 40, borderRadius: small ? 10 : 12, background: "var(--accent)", display: "grid", placeItems: "center", boxShadow: "0 2px 10px rgba(255,122,26,0.28)", flexShrink: 0 }}>
-        <FlameIcon size={small ? 18 : 21} color="#fff" />
+      <div
+        style={{
+          width: small ? 34 : 40,
+          height: small ? 34 : 40,
+          borderRadius: small ? 10 : 12,
+          background: "#0a0c10",
+          border: "1px solid rgba(255,255,255,0.09)",
+          display: "grid",
+          placeItems: "center",
+          boxShadow: "0 2px 12px rgba(224,30,55,0.22)",
+          flexShrink: 0,
+        }}
+      >
+        <LogoMark size={small ? 26 : 32} />
       </div>
       {!small && (
         <div style={{ flex: 1 }}>

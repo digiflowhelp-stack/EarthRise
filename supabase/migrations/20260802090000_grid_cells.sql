@@ -1,4 +1,4 @@
--- Algeria Fire Map — ML training grid (Milestone 6, part 1: the R2-independent foundation).
+-- FireWatch — ML training grid (Milestone 6, part 1: the R2-independent foundation).
 -- grid_cells: a static 0.1° (~11 km) grid over fire-prone NORTHERN Algeria, clipped
 -- to the border polygon and cut off south of ~34°N (excludes the Sahara / gas-flare
 -- belt). Each (cell, day) is one future training sample; features + labels attach

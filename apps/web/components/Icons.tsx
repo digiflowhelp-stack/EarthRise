@@ -12,6 +12,28 @@ export function FlameIcon({ size = 20, color = "currentColor" }: { size?: number
   );
 }
 
+const LOGO_FLAME_PATH =
+  "M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.547 3.75 3.75 0 0 1 3.255 3.718Z";
+
+/** FireWatch brand mark: gradient flame on a radar watch ring. */
+export function LogoMark({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" style={{ display: "block" }}>
+      <defs>
+        <linearGradient id="fw-logo-fire" x1="18" y1="10" x2="46" y2="54" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#ffb020" />
+          <stop offset="0.55" stopColor="#ff5a36" />
+          <stop offset="1" stopColor="#e01e37" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="32" r="21" fill="none" stroke="#ffffff" strokeOpacity="0.13" strokeWidth="2.5" />
+      <path d="M 32 11 A 21 21 0 0 1 50.19 42.5" fill="none" stroke="url(#fw-logo-fire)" strokeWidth="2.5" strokeLinecap="round" />
+      <circle cx="50.19" cy="42.5" r="3" fill="#ffb020" />
+      <path transform="translate(18.2 18.2) scale(1.15)" fill="url(#fw-logo-fire)" fillRule="evenodd" clipRule="evenodd" d={LOGO_FLAME_PATH} />
+    </svg>
+  );
+}
+
 export function PinIcon({ size = 14, color = "currentColor" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true" style={{ display: "block" }}>

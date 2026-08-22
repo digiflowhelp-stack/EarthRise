@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Algeria Fire Map",
-    short_name: "Fire Map",
-    description: "Real-time satellite wildfire monitoring and fire-risk for Algeria.",
+    name: "FireWatch",
+    short_name: "FireWatch",
+    description: "Real-time wildfire intelligence from space. Live fire detections, intensity, and climate risk — for communities on the front line.",
     start_url: "/",
     display: "standalone",
     background_color: "#07080c",

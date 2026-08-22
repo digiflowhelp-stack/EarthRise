@@ -18,7 +18,7 @@ router = APIRouter()
 NOMINATIM = "https://nominatim.openstreetmap.org/reverse"
 PLACE_TTL = 60 * 60 * 24 * 30  # 30 days
 # Nominatim requires a descriptive User-Agent identifying the app.
-UA = "AlgeriaFireMap/1.0 (https://algeria-fire-map.vercel.app)"
+UA = "FireWatch/1.0 (https://github.com/digiflowhelp-stack/FireWatch)"
 
 
 def _extract(addr: dict) -> dict:

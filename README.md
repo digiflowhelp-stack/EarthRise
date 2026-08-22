@@ -1,16 +1,18 @@
 <div align="center">
 
-# Algeria Fire Map
+<img src="apps/web/app/icon.svg" alt="FireWatch logo" width="96" height="96">
 
-**Real-time satellite wildfire monitoring for Algeria** — live fire detections, intensity, history replay, and fire-risk by wilaya.
+# FireWatch
 
-🌍 **Live:** [www.algeriafiremap.site](https://www.algeriafiremap.site)
+**Real‑time wildfire intelligence from space. Live fire detections, intensity, and climate risk – for communities on the front line.**
+
+🔗 **Repo:** [github.com/digiflowhelp-stack/FireWatch](https://github.com/digiflowhelp-stack/FireWatch)
 
 Open source · MIT licensed · Built with NASA FIRMS, Open-Meteo & OpenStreetMap
 
 </div>
 
-![Algeria Fire Map — live desktop view](docs/screenshots/desktop-dark.png)
+![FireWatch — live desktop view](docs/screenshots/desktop-dark.png)
 
 <div align="center">
 

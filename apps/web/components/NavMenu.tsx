@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "@/lib/i18n/LocaleProvider";
 import { MenuIcon, MapIcon, ChartIcon, GitHubIcon, CloseIcon } from "./Icons";
 
-const REPO = "https://github.com/MoussaabBadla/algeria-fire-map";
+const REPO = "https://github.com/digiflowhelp-stack/FireWatch";
 
 // Compact navigation menu: a menu icon that opens a dropdown of pages. Central
 // place to reach the map / stats / (future pages) without cluttering the map UI.

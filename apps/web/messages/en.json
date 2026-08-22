@@ -1,7 +1,7 @@
 {
   "common": {
-    "appName": "Algeria Fire Map",
-    "tagline": "Live wildfire monitoring",
+    "appName": "FireWatch",
+    "tagline": "Real-time wildfire intelligence from space",
     "openSource": "Open source",
     "by": "by {name}",
     "mapAttribution": "Map © OpenStreetMap · Esri · Fires: NASA FIRMS",

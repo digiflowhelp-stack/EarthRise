@@ -328,7 +328,7 @@ export default function StatsView({ data: initial }: { data: StatsData }) {
           <div style={{ marginTop: 22, textAlign: "center", fontSize: 12, color: "var(--text-muted)" }}>
             <Link href="/" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>{t("stats.backToMap")}</Link>
             {" · "}
-            <a href="https://github.com/MoussaabBadla/algeria-fire-map" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)", textDecoration: "none" }}>{t("common.openSource")}</a>
+            <a href="https://github.com/digiflowhelp-stack/FireWatch" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)", textDecoration: "none" }}>{t("common.openSource")}</a>
           </div>
         </div>
       </main>
